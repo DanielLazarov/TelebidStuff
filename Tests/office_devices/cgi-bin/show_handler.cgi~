@@ -1,0 +1,41 @@
+#!/usr/bin/perl -w
+use CGI;
+use strict;
+use DBI;
+use warnings;
+use Encode;
+
+print "Content-type: application/json\n\n";
+
+my $conn = DBI->connect("DBI:Pg:dbname=office_devices; host=localhost", 'pg_user', '564564') || die "Could not connect to database";
+
+my $cgi = CGI->new;
+my $choice = $cgi->param("choice");
+
+if($choice eq "computers") {
+
+	my $network = $cgi->param("network");
+	my $scmd = "SELECT id FROM networks WHERE name = ?";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute($network) || die "couldnt fetch networks\n";	
+	my $ref = $rows->fetchrow_hashref();
+	my $network_id = $ref->{'id'};
+
+	$scmd = "SELECT host_name FROM computers WHERE network_id = ?";
+	$rows = $conn->prepare($scmd);
+	$rows->execute($network_id) || die "couldnt fetch networks\n";	
+	my $response = '{"data":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $name = decode_utf8( $ref->{'host_name'} ); 
+		$response .= '{"name":' . "\"$name\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+}

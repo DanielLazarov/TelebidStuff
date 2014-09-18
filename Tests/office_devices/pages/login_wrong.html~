@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>LogIn</title>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	</head>
+	<body>
+		<form id="login-form" action="cgi-bin/login.cgi" method="post">
+			<label for="username" id="username-label">Username:</label>
+			<input type="text" name="username"></input>
+			<label for="password" id="password-label">Password:</label>
+			<input type="password" name="password"></input>
+			<p>*Incorrect login name Or password, please try again</p>
+			<br />
+			<input type="submit" value="Log in"></input>
+		</form>
+	</body>
+</html>

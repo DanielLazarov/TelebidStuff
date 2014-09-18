@@ -1,0 +1,23 @@
+https://localhost/cgi-bin/checkUser.cgi
+https://localhost/sgi-bin/checkUser.cgi
+
+CREATE TABLE uers(
+id SERIAL UNIQUE NOT NULL,
+name VARCHAR(255) NOT NULL,
+fb_id VARCHAR(128) UNIQUE NOT NULL,
+link VARCHAR(128) NOT NULL UNIQUE
+);
+
+CREATE TABLE stories(
+id SERIAL UNIQUE NOT NULL,
+name VARCHAR(255) NOT NULL,
+user_VARCHAR(128) REFERENCES users(fb_id),
+date DATE NOT NULL
+);
+
+CREATE TABLE events(
+id SERIAL UNIQUE NOT NULL,
+story_id INTEGER REFERENCES stories(id),
+description VARCHAR(255) NOT NULL,
+location VARCHAR(255)
+);

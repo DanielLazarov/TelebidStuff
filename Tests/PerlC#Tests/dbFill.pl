@@ -1,0 +1,95 @@
+use warnings;
+use DBI;
+use strict;
+
+my $conn = DBI->connect("DBI:Pg:dbname=my_pg_db;host=localhost", "pg_user", "564564");
+for(my $i = 0; $i< 20; $i ++) {
+	my ($name, $type, $gender, $vetNo, $vacine);
+	my $choice = int(rand(10));
+	if($choice%2 ==0) {
+		$gender = "male";
+	}
+	else {
+		$gender = "female";
+	}
+
+	$choice = int(rand(10));
+	if($choice%2 ==0) {
+		$vacine = "t";
+	}
+	else {
+		$vacine = "f";
+	}
+
+	$choice = int(rand(10));
+	if($choice % 3 ==0) {
+		$vetNo = 1;
+	}
+	elsif ($choice % 2 ==0){
+		$vetNo = 2;
+	}
+	else {
+		$vetNo = 3;
+	}
+
+	$choice = int(rand(10));
+	if($choice % 5 ==0) {
+		$type = "horse";
+	}
+	elsif ($choice % 4 ==0){
+		$type = "cat";
+	}
+	elsif ($choice % 3 ==0){
+		$type = "dog";
+	}
+	elsif ($choice % 2 ==0){
+		$type = "cow";
+	}
+	else {
+		$type = "hamster";
+	}
+
+	$choice = int(rand(10));
+	if($choice % 5 ==0) {
+		$name = "gosho";
+	}
+	elsif ($choice % 4 ==0){
+		$name = "pesho";
+	}
+	elsif ($choice % 3 ==0){
+		$name = "asen";
+	}
+	elsif ($choice % 2 ==0){
+		$name = "poli";
+	}
+	else {
+		$name = "guncho";
+	}
+	
+	$conn->do("INSERT INTO animals (type, name, gender, vet_id, vaccinated) VALUES (\'$type\',\'$name\',\'$gender\',\'$vetNo\',	\'$vacine\')");
+	
+}
+print "done";
+
+#-------THE TABLES----
+
+#CREATE TABLE animals(
+#a_id serial,
+#type VARCHAR(25) NOT NULL,
+#name VARCHAR(25) NOT NULL,
+#gender VARCHAR(25) CHECK (gender in ('male', 'female')), 
+#vet_id INTEGER REFERENCES vets(id), 
+#vaccinated BOOLEAN DEFAULT FALSE
+#);
+
+
+#CREATE TABLE vets( 
+#id SERIAL PRIMARY KEY,    
+#first_name VARCHAR(25),         
+#middle_name VARCHAR(25),
+#last_name VARCHAR(25),
+#phone VARCHAR(12),                                     
+#address VARCHAR(50),
+#experience_years INTEGER
+#);
+

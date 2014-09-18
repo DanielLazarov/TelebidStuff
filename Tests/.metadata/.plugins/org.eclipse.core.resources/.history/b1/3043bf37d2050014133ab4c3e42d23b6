@@ -1,0 +1,30 @@
+import java.io.File;
+
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+      //checkStack();
+		long length = fileTest("/home/daniel/Desktop/bigAssFile");
+		System.out.println(length);
+	}
+	
+	public static void checkStack(){
+		
+		StackTraceElement[] ste =  Thread.currentThread().getStackTrace();
+		System.out.println(ste);
+	}
+	
+	public static long fileTest(String path){
+		
+		File myFile = new File(path);
+		long byteValue = myFile.length();
+		//System.out.println(myFile.length());
+		
+		return byteValue;
+	}
+
+}

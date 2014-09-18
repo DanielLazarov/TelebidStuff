@@ -1,0 +1,8 @@
+MSG: Hello, 
+COMPUTER_PARTS: Компютърни части
+TYPES: Типове
+USERNAME: daniel
+COMPUTERS: Компютри
+NETWORK_DEVICES: Мрежови устройства
+MODELS: Модели
+NETWORKS: Мрежи

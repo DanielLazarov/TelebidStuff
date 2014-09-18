@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <title><TMPL_VAR NAME=TITLE></title>
+        <script type="text/javascript" src="../scripts/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="../scripts/office-devices.js"></script>
+        <script type="text/javascript" src="../scripts/binded_onload.js"></script>
+        <script type="text/javascript" src="../scripts/requestGen.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+    </head>
+    <body>
+        <div id="main" class="main-container">
+            <div class="navbar">
+                <div class="pull-left menu">
+                    <input type="button" class="btn" formtype="new" form="computers" value="<TMPL_VAR NAME=COMPUTERS>">
+                    <input type="button" class="btn" formtype="new" form="hardware_parts" value="<TMPL_VAR NAME=COMPUTER_PARTS>">
+                    <input type="button" class="btn" formtype="new" form="networks" value="<TMPL_VAR NAME=NETWORKS>">
+                    <input type="button" class="btn" formtype="new" form="network_devices" value="<TMPL_VAR NAME=NETWORK_DEVICES>">
+                    <input type="button" class="btn" formtype="new" form="models" value="<TMPL_VAR NAME=MODELS>">
+                    <input type="button" class="btn" formtype="new" form="types" value="<TMPL_VAR NAME=TYPES>">
+                </div>
+                <div class="pull-right language-select">
+                    <form class="language-form" id="language-form" method="post" action="../perl/language_switcher.cgi">
+                        <input type="hidden" name="language" class="input-current-language" value="<TMPL_VAR NAME=LANGUAGE>">
+                        <img src="../images/en.png" class="language-icon <TMPL_VAR NAME=ACTIVEEN>" language="en">
+                        <img src="../images/bg.png" class="language-icon <TMPL_VAR NAME=ACTIVEBG>" language="bg">
+                    </form>
+                </div>
+                <div class="log-out-form pull-right">
+                    <form id="logout-form" action="../index.pl" method="POST">
+                        <input type="hidden" value="1" name="logout">
+                        <input type ="submit" class="btn" value="<TMPL_VAR NAME=LOGOUT>">
+                    </form>
+                </div>
+                <div class="user pull-right"><TMPL_VAR NAME=MSG> <b><TMPL_VAR NAME=USERNAME></b></div>
+            </div>
+            <div id="form-container" class="form-container forms"><img class="index-image" src="../images/index.png"></div>
+    </body>
+</html>

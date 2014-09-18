@@ -1,0 +1,71 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use CGI::Session;
+use CGI qw(:standard);
+use Crypt::PBKDF2;
+use DBI;
+
+my $dbUser = "pg_user";
+my $host = "localhost";
+my $db = "office_devices";
+my $pw = "564564";
+
+my $conn = DBI->connect("DBI:Pg:dbname=".$db."; host=" . $host, $dbUser, $pw) || die "Could not connect to database";
+
+my $cgi = CGI->new;
+my $username = $cgi->param("username");
+my $password = $cgi->param("password");
+
+
+#get the password hash from the database
+my $cmd = 'SELECT password from users where username = ?';
+my $rows = $conn->prepare($cmd);
+$rows->execute('daniel');
+my $ref = $rows->fetchrow_hashref();
+my $hashed = $ref->{'password'};
+
+my $pbkdf2 = Crypt::PBKDF2->new(
+    hash_class => 'HMACSHA2',
+    hash_args => {
+    	sha_size => 512,
+    },
+	iterations => 10000,
+);
+
+#hash the password from the form   
+my $hash = $pbkdf2->generate($password,$username);
+
+#validate the password
+if ($hash eq $hashed) {
+
+
+	my $session = new CGI::Session();
+	$session->expire(30);#session expires in 30 sec
+	print $session->header();
+	my $string; 
+	{
+  		local $/ = undef;
+  		open FILE, "../pages/index.html" or die "Couldn't open file: $!";
+ 		 $string = <FILE>;
+  		close FILE;
+	}
+	print '<meta http-equiv="refresh" content="0; url=https://localhost:442" />';
+}
+else {
+	print "Content-type: text/html\n\n";
+	my $string; 
+	{
+  		local $/ = undef;
+  		open FILE, "../pages/login_wrong.html" or die "Couldn't open file: $!";
+ 		 $string = <FILE>;
+  		close FILE;
+	}
+	print $string;
+	
+}
+$rows->finish();
+$conn->disconnect;
+
+

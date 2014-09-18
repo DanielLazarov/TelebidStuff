@@ -1,0 +1,20 @@
+use strict;
+use warnings;
+use File::Compare;
+
+local $/;
+open(FILE, "ivan.txt") or die "Can't read file 'filename' [$!]\n";  
+my $document = <FILE>; 
+close (FILE);
+my $str = "Az sum Ivan" . "\n" . "Az sum Pesho" . "\n";
+if($str eq $document) {
+    print "equal \n";
+}
+else {
+    print "not equal \n";
+}
+print".....";
+print $document;
+print".....";
+print $str;
+print".....";

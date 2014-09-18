@@ -1,0 +1,12 @@
+﻿
+<div id="form-the-form" class="form-the-form">
+	<h2><TMPL_VAR NAME=TABLENAME></h2>
+	<form id="<TMPL_VAR ESCAPE=HTML NAME="ID">" class="<TMPL_VAR ESCAPE=HTML NAME="CLASS"> form-active-form" method="<TMPL_VAR ESCAPE=HTML NAME="METHOD">" action="<TMPL_VAR ESCAPE=HTML NAME="ACTION">"  enctype="<TMPL_VAR ESCAPE=HTML NAME="ENCTYPE">">
+		<TMPL_VAR NAME=FORMDATA>
+		<br />
+		<p class="status" id="<TMPL_VAR ESCAPE=HTML NAME="ID">-status"></p>
+		<TMPL_VAR NAME=FORMBUTTON>
+		<img src="../images/loading.gif" form="<TMPL_VAR ESCAPE=HTML NAME="FORM">" id="<TMPL_VAR ESCAPE=HTML NAME="ID">-loading" class="loading" form="<TMPL_VAR ESCAPE=HTML NAME="FORM">" style="display: none;">
+		<input type="hidden" value="<TMPL_VAR ESCAPE=HTML NAME="FORM">" name="choice" />
+	</form>
+</div>

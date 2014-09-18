@@ -1,0 +1,68 @@
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+
+use DBI;
+use Encode;
+use Try::Tiny;
+use CGI::Session;
+use CGI qw/:standard/;
+
+use Office::CustomDD;
+use Office::FGenerator;
+
+my %HoF = (
+    'custom-dropdown-network_id'    =>  \&Office::CustomDD::customDropDownNetworks,
+    'custom-dropdown-computer_id'   =>  \&Office::CustomDD::customDropDownComputers,
+    'custom-dropdown-model_id'      =>  \&Office::CustomDD::customDropDownModels,
+    'custom-dropdown-type_id'       =>  \&Office::CustomDD::customDropDownTypes,
+	'generate_form'                 =>  \&Office::FGenerator::generateForm, 
+);
+
+my $dbName = "office_devices";
+my $host = "localhost";
+my $user = "pg_user";
+my $pw = "564564";
+my $dbh;
+
+
+my $cgi = CGI->new;
+my %params = $cgi->Vars;
+
+try{
+
+    $dbh = DBI->connect(
+                           "DBI:Pg:dbname=$dbName; host=$host",
+                           $user, 
+                           $pw,
+                           { 
+                               RaiseError => 1,
+                               Autocommit => 0,       
+                           }
+                        );
+
+    out($cgi->param('action'), %params);
+    $dbh->commit;
+    $dbh->disconnect;
+}
+catch
+{
+    $dbh->rollback;
+    $dbh->disconnect;
+    #out('error');
+    open ERRORFILE, "> errorfile.txt";
+    print ERRORFILE $_;
+    close ERRORFILE;
+};
+
+
+
+
+
+sub out
+{
+    my ($cmd) = $_[0];
+    print $HoF{lc $cmd}->($dbh,$cgi->param("action"),%params);
+}
+

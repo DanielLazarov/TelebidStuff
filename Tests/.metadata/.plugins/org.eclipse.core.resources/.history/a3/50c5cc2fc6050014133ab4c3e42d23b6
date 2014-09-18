@@ -1,0 +1,16 @@
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+checkStack(1000);
+	}
+	
+	public static void checkStack(int someNum){
+		StackTraceElement[] ste =  Thread.currentThread().getStackTrace();
+		System.out.println(ste);
+	}
+
+}

@@ -1,0 +1,100 @@
+[Mon Sep 15 18:56:49 2014from:10.20.2.104]
+[Mon Sep 15 18:58:21 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success2) already exists.
+[Mon Sep 15 19:00:11 2014 from: 10.20.2.125]ERROR:  column "network_name_-expires" does not exist
+LINE 5:                     WHERE lower("network_name_-expires") LIK...
+                                        ^
+[Mon Sep 15 19:02:07 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 10:16:56 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 10:18:19 2014 from: 10.20.2.125]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 10:50:54 2014 from: 10.20.2.141]ERROR:  syntax error at or near ","
+LINE 1: INSERT INTO "computers"("serial_num",,,,,,,"add_btn","last_m...
+                                             ^
+[Tue Sep 16 10:52:43 2014 from: 10.20.2.141]ERROR:  syntax error at or near ","
+LINE 1: INSERT INTO "computers"("serial_num",,,,,,,"add_btn","last_m...
+                                             ^
+[Tue Sep 16 10:52:46 2014 from: 10.20.2.141]ERROR:  syntax error at or near ","
+LINE 1: INSERT INTO "computers"("serial_num",,,,,,,"add_btn","last_m...
+                                             ^
+[Tue Sep 16 10:57:46 2014 from: 10.20.2.141]ERROR:  syntax error at or near ","
+LINE 1: INSERT INTO "computers"("serial_num",,,,,,,"add_btn","last_m...
+                                             ^
+[Tue Sep 16 10:58:20 2014 from: 10.20.2.141]ERROR:  syntax error at or near ","
+LINE 1: INSERT INTO "computers"("serial_num",,,,,,,"add_btn","last_m...
+                                             ^
+[Tue Sep 16 11:00:07 2014 from: 10.20.2.141]ERROR:  syntax error at or near ","
+LINE 1: INSERT INTO "computers"("serial_num",,,,,,,"add_btn","last_m...
+                                             ^
+[Tue Sep 16 11:02:15 2014 from: 10.20.2.141]ERROR:  column "add_btn" of relation "computers" does not exist
+LINE 1: INSERT INTO "computers"("serial_num","add_btn","last_modifie...
+                                             ^
+[Tue Sep 16 11:05:02 2014 from: 10.20.2.141]ERROR:  column "add_btn" of relation "computers" does not exist
+LINE 1: INSERT INTO "computers"("serial_num","add_btn","last_modifie...
+                                             ^
+[Tue Sep 16 11:06:40 2014 from: 10.20.2.141]ERROR:  invalid input syntax for integer: ""
+[Tue Sep 16 11:10:37 2014 from: 10.20.2.141]ERROR:  invalid input syntax for integer: ""
+[Tue Sep 16 11:11:52 2014 from: 10.20.2.141]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:12:28 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:13:39 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:14:35 2014 from: 10.20.2.141]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:14:35 2014 from: 10.20.2.141]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:14:38 2014 from: 10.20.2.141]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:51:07 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:51:37 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:53:20 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "hardware_parts_serial_num_key"
+DETAIL:  Key (serial_num)=(Part2) already exists.
+[Tue Sep 16 11:54:26 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 11:54:51 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Tue Sep 16 16:04:36 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(sdfsdfsd) already exists.
+[Wed Sep 17 18:38:24 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:27 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:35 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:39 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:40 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:41 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:41 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:41 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:41 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:42 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:42 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success) already exists.
+[Wed Sep 17 18:38:48 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success11) already exists.
+[Wed Sep 17 18:39:00 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success112) already exists.
+[Wed Sep 17 18:39:03 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(success112) already exists.
+[Wed Sep 17 18:48:08 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computer_images_u_constraint"
+DETAIL:  Key (foreign_id, file_name)=(2000204, computers2000204_.png) already exists.
+[Wed Sep 17 18:48:15 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computer_images_u_constraint"
+DETAIL:  Key (foreign_id, file_name)=(2000205, computers2000205_.png) already exists.
+[Wed Sep 17 18:49:36 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computer_images_u_constraint"
+DETAIL:  Key (foreign_id, file_name)=(2000206, computers2000206_.png) already exists.
+[Wed Sep 17 18:49:57 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computer_images_u_constraint"
+DETAIL:  Key (foreign_id, file_name)=(2000207, computers2000207_.png) already exists.
+[Wed Sep 17 18:50:05 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computer_images_u_constraint"
+DETAIL:  Key (foreign_id, file_name)=(2000208, computers2000208_.png) already exists.

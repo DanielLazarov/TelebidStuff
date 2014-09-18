@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <title>LogIn</title>
+        <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+    </head>
+    <body>
+        <form class="log-in-form" action="../perl/login.pl" method="post">
+            <label for="username" id="username-label">Username:</label>
+            <input id="username-input" type="text" placeholder="Username" name="username"></input>
+            <label for="password" id="password-label">Password:</label>
+            <input id="password-input" type="password" placeholder="Password" name="password"></input>
+            <input type="submit" id="login-btn" class="btn" value="Log in"></input>
+            <div id="status"><p>*Incorrect login information.</p></div>
+        </form>
+    </body>
+</html>
+

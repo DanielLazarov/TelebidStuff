@@ -1,0 +1,21 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
+
+public class BinFilegeneratorMain {
+
+	public static void main(String[] args) {
+
+		try {
+			new RandomAccessFile("/home/daniel/Desktop bigAssFile.file", "rw").setLength(5368709120L);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}

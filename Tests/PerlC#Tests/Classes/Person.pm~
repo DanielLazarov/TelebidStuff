@@ -1,0 +1,51 @@
+package Human;
+sub new
+{
+	my $class = shift;
+	my $self = {
+		_firstName 	=> shift,
+		_lastName 	=> shift,
+		_gender		=> shift,
+		_indefNum	=> shift
+	};
+	$self->{_address} = undef;
+	$self->{_job} = undef;
+	bless $self, $class;
+	return $self;
+}
+
+sub setAddress {
+    my ( $self, $address ) = @_;
+    $self->{_address} = $address if defined($address);
+    return $self->{_address};
+}
+
+sub setJob {
+	my ($self, $job) = @_;
+	$self->{_job} = $job if defined($job);
+	return $self->{_job};
+}
+
+sub getFirstName {
+    my( $self ) = @_;
+    return $self->{_firstName};
+}
+1;
+
+package Ivan;
+sub new
+{
+	my $class = shift;
+	my $self = {
+		_firstName 	=> shift,
+		_lastName 	=> shift,
+		_ssn		=> shift,
+	};
+	#Print all the values just for clarification,
+	print "First Name is $self->{_firstName}\n";
+	print "Last Name is $self->{_lastName}\n";
+	print "SSN is $self->{_ssn}\n";
+	bless $self, $class;
+	return $self;
+}
+1;

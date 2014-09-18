@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" />
+<title>УИСС - оценки</title>
+</head>
+
+<body>
+
+<table width="100%"  border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td valign="top">
+			<table width="100%"  border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<td valign="bottom" nowrap="nowrap" rowspan="3"><a href="/"><img src="/Templates/img/uiss.gif" alt="УИСС" width="143" height="54" border="0" /></a></td>
+					<td align="left" valign="top" nowrap="nowrap" class="dashed_links">					</td>
+					<td width="100%" align="right" valign="top" nowrap="nowrap" class="dashed_links">&nbsp;&nbsp;<strong>Даниел Росенов Лазаров</strong> | <a href="/marks.php?logout=true">Изход</a>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="left" valign="bottom" nowrap="nowrap" class="dashed_links">&nbsp;&nbsp;
+						<strong>
+						<a href='info.php'>Информация</a> | <a href='health.php'>Здравно осигуряване</a> | Оценки | <a href='certs.php'>Заверки</a> | <a href='security.php'>Последни 10 влизания</a>						</strong>&nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="left" valign="bottom" nowrap="nowrap">
+						<table width="100%"  border="0" cellpadding="0" cellspacing="0" class="hr">
+							<tr>
+								<td align="left"><img src="Templates/img/px.gif" width="1" height="5"  alt="-" /></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>     <td valign="top">
+       <table width="100%"  border="0" cellpadding="0" cellspacing="5">
+         <tr>
+           <td>
+<table border="0" cellspacing="0" cellpadding="10"><tr><td>
+      <table width="600" border="0" cellspacing="0" cellpadding="0" class="list_table">
+        <tr align="center">
+          <td nowrap="nowrap" class="title">#</td>
+          <td nowrap="nowrap" class="title">Дисциплина</td>
+          <td nowrap="nowrap" class="title">Форма на контрол</td>
+          <td nowrap="nowrap" class="title">Оценка</td>
+        </tr>		
+        <tr align="center"><td nowrap="nowrap" colspan="4" class="subtitle">&nbsp;Семестър 1&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;1&nbsp;</td><td nowrap="nowrap">&nbsp;ВИСША МАТЕМАТИКА I&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;добър(4)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;2&nbsp;</td><td nowrap="nowrap">&nbsp;ВЪВЕДЕНИЕ В СПЕЦИАЛНОСТТА&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;3&nbsp;</td><td nowrap="nowrap">&nbsp;ИКОНОМИКА&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;мн.добър(5)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;4&nbsp;</td><td nowrap="nowrap">&nbsp;ОСНОВИ НА ИНЖЕНЕРНОТО ПРОЕКТИРАНЕ I&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;5&nbsp;</td><td nowrap="nowrap">&nbsp;ПРОГРАМИРАНЕ И ИЗПОЛЗВАНЕ НА КОМПЮТРИ I&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;среден(3)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;6&nbsp;</td><td nowrap="nowrap">&nbsp;ФИЗИКА I&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;среден(3)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;7&nbsp;</td><td nowrap="nowrap">&nbsp;ФИЗИЧЕСКА КУЛТУРА&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;8&nbsp;</td><td nowrap="nowrap">&nbsp;ХИМИЯ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;добър(4)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;9&nbsp;</td><td nowrap="nowrap">&nbsp;ЧУЖД ЕЗИК&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap" colspan="4" class="subtitle">&nbsp;Семестър 2&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;10&nbsp;</td><td nowrap="nowrap">&nbsp;АНГЛИЙСКИ ЕЗИК&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;отличен(6)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;11&nbsp;</td><td nowrap="nowrap">&nbsp;ВИСША МАТЕМАТИКА II&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;среден(3)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;12&nbsp;</td><td nowrap="nowrap">&nbsp;МАТЕРИАЛОЗНАНИЕ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;среден(3)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;13&nbsp;</td><td nowrap="nowrap">&nbsp;МАШИНОЗНАНИЕ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;добър(4)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;14&nbsp;</td><td nowrap="nowrap">&nbsp;ОСНОВИ НА ИНЖЕНЕРНОТО ПРОЕКТИРАНЕ II&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;отличен(6)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;15&nbsp;</td><td nowrap="nowrap">&nbsp;ПРОГРАМИРАНЕ И ИЗПОЛЗВАНЕ НА КОМПЮТРИ II&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;отличен(6)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;16&nbsp;</td><td nowrap="nowrap">&nbsp;ТЕХНОЛОГИЧЕН ПРАКТИКУМ&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;17&nbsp;</td><td nowrap="nowrap">&nbsp;УЧЕБНА ПРАКТИКА&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;18&nbsp;</td><td nowrap="nowrap">&nbsp;ФИЗИКА II&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;добър(4)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap" colspan="4" class="subtitle">&nbsp;Семестър 3&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;19&nbsp;</td><td nowrap="nowrap">&nbsp;АНГЛИЙСКИ ЕЗИК&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;отличен(6)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;20&nbsp;</td><td nowrap="nowrap">&nbsp;ВИСША МАТЕМАТИКА III&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;мн.добър(5)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;21&nbsp;</td><td nowrap="nowrap">&nbsp;ЕЛЕКТРИЧЕСКИ ИЗМЕРВАНИЯ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;добър(4)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;22&nbsp;</td><td nowrap="nowrap">&nbsp;ПОЛУПРОВОДНИКОВИ ЕЛЕМЕНТИ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;отличен(6)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;23&nbsp;</td><td nowrap="nowrap">&nbsp;ПРОГРАМИРАНЕ И ИЗПОЛЗВАНЕ НА КОМПЮТРИ III&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;добър(4)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;24&nbsp;</td><td nowrap="nowrap">&nbsp;ТЕОРЕТИЧНА ЕЛЕКТРОТЕХНИКА &nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;среден(3)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;25&nbsp;</td><td nowrap="nowrap">&nbsp;ФИЗИЧЕСКА КУЛТУРА&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap" colspan="4" class="subtitle">&nbsp;Семестър 4&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;26&nbsp;</td><td nowrap="nowrap">&nbsp;АНАЛИЗ И СИНТЕЗ НА ЛОГИЧЕСКИ СХЕМИ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;мн.добър(5)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;27&nbsp;</td><td nowrap="nowrap">&nbsp;БАЗИ ОТ ДАННИ&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;мн.добър(5)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;28&nbsp;</td><td nowrap="nowrap">&nbsp;МИКРОПРОЦЕСОРНА ТЕХНИКА&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;отличен(6)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;29&nbsp;</td><td nowrap="nowrap">&nbsp;ПРАВЕН РЕЖИМ НА КОМПЮТЪРНИТЕ ПРЕСТЪПЛЕНИЯ&nbsp;</td><td nowrap="nowrap">&nbsp;Текуща оценка&nbsp;</td><td nowrap="nowrap">&nbsp;среден(3)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;30&nbsp;</td><td nowrap="nowrap">&nbsp;СИГНАЛИ И СИСТЕМИ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;слаб(2)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;31&nbsp;</td><td nowrap="nowrap">&nbsp;СИНТЕЗ И АНАЛИЗ НА АЛГОРИТМИ&nbsp;</td><td nowrap="nowrap">&nbsp;Изпит&nbsp;</td><td nowrap="nowrap">&nbsp;добър(4)&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;32&nbsp;</td><td nowrap="nowrap">&nbsp;УЧЕБНО-ПРОИЗВОДСТВЕНА ПРАКТИКА&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center"><td nowrap="nowrap">&nbsp;33&nbsp;</td><td nowrap="nowrap">&nbsp;ФИЗИЧЕСКА КУЛТУРА&nbsp;</td><td nowrap="nowrap">&nbsp;Няма&nbsp;</td><td nowrap="nowrap">&nbsp;-&nbsp;</td></tr><tr align="center">
+	<td nowrap="nowrap" class="subtitle" colspan="20">
+				Оценка общ среден успех - добър(4.33)<br />
+		Оценка среден успех от последни два семестъра - добър(4.42)	</td>
+</tr>
+      </table>		   
+</td></tr></table>		   
+		   </td>
+         </tr>
+       </table>
+     </td>
+   </tr>
+	<tr>
+		<td valign="bottom">
+			<table width="100%"  border="0" cellpadding="0" cellspacing="3" class="dashed_links">
+				<tr>
+					<td align="right" nowrap="nowrap" class="copyright">
+						<table width="100%"  border="0" cellpadding="0" cellspacing="0" class="hr">
+							<tr>
+								<td align="left"><img src="Templates/img/px.gif" width="1" height="5" alt="-" /></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" nowrap="nowrap" class="copyright">За въпроси свързани с изнесената тук информация, моля свържете се с Вашата факултетна канцелария.<br />
+					<a href="/" title="УИСС">Университетска Информационна Система - Студент</a>&copy; 2009 <a href="http://cir.tu-sofia.bg" title="Център за Информационни Ресурси" target="_blank">ЦИР</a> при <a href="http://www.tu-sofia.bg/" title="Технически Университет - София" target="_blank">ТУ-София</a>&nbsp;<br /><br />
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

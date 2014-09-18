@@ -1,0 +1,21 @@
+use Classes::Animals;
+use strict;
+use warnings;
+
+my $cat = new Cat("Goshko","mujki","cheren",1);
+my $dog = new Dog("Pesho", "mujki", "bql", "labrador");
+if($cat->isNinja) {
+	print $cat->name . " is a Ninja\n";
+}
+
+else {
+	print $cat->name . " is not a Ninja \n";
+}
+
+#getting the type
+	#print $cat->checkType . "\n";
+	#my $type = ref $cat;
+	#print ref $cat;
+
+$cat->makeSomeNoise;
+$dog->makeSomeNoise;

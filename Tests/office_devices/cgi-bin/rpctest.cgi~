@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Data::Dumper;
+use CGI;
+use JSON;
+
+
+my $cgi = CGI->new;
+
+my $params = $cgi->Vars;
+my $json = JSON->new->allow_nonref;
+my $data = $cgi->Vars;
+
+my $hash = $json->decode($cgi->param('json_rpc'));
+
+my $param1 = $$hash{'params'}{'param1'};
+
+my $testHtmlString = '<input type="button" id="newbutton" class="newerbutton" value="I am a generat edButton">';
+
+my %hashe = (
+	'response' => $testHtmlString
+);
+
+
+
+print $cgi->header(-type=>'application/json', -charset=>'utf-8');
+print $json->encode(\%hashe);
+
+
+
+
+
+
+open FILE, "> rpctest.txt";
+print FILE "param1: $param1 \n\n";
+print FILE $json->encode(\%hashe);
+

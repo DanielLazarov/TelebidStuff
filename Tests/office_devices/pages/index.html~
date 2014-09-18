@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>OfficeDevices</title>
+		<script type="text/javascript" src="scripts/jquery-1.11.1.min.js"></script>
+		<script type="text/javascript" src="scripts/office-devices.js"></script>
+		<script type="text/javascript" src="scripts/result_tables.js"></script> 
+		<script type="text/javascript" src="scripts/binded_onload.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	</head>
+	<body>
+		 <!-- 
+ 		<div id="log-in">
+			<form id="log-in-form">
+				<label for="username">Username</label>
+				<input type="text"></input>
+				<label for="password">Password</label>
+				<input type="password"></input>
+			</form>
+		</div>
+		-->
+		<!--<input type="button" id="testLang" value="Click me" onclick="javascript:openLinkWithCurrentParams('/'); return false;"></input> 
+		-->
+		<div id="main" style="margin-left: 200px; width: 800px; height: 695px;">
+			<div style="width:60px;z-index:100;" class="layerItem top_languagen_switcher ItemClass-10-1-top_languagen_switcher pull-left"> 
+			    <ul class="language-switcher">
+			    	<li class="hu first active">
+						<a class="language-link active" href="en" onclick="javascript:openLinkWithCurrentParams('/en/');return false;">
+							<img src="../images/en.png" class="language-icon">
+						</a>
+					</li>
+			    	<li class="en last">
+			    		<a class="language-link" href="bg" onclick="javascript:openLinkWithCurrentParams('/'); return false;">
+			    			<img src="../images/bg.png" class="language-icon">
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="navbar-inverse pull-left">
+				<input type="button" class="btn-navbar" value="Computers" onclick="selectComputers();"></input>
+				<input type="button" class="btn-navbar" value="Computer Parts" onclick="selectComputerParts();"></input>
+				<input type="button" class="btn-navbar" value="Networks" onclick="selectNetworks();"></input>
+				<input type="button" class="btn-navbar" value="Network Devices" onclick="selectNetworkDevices();"></input>
+				<input type="button" class="btn-navbar" value="Models" onclick="selectModels();"></input>
+				<input type="button" class="btn-navbar" value="Types" onclick="selectTypes();"></input>
+			</div>
+			<br />
+			<br />
+
+			<div id="computers" style="display: none" class="forms">
+				<div class="pull-left form-container">
+					<div class="navbar-inverse inner-form">
+						<input type="button" class="btn-navbar" value="New Computer" onclick="showNewComputerForm();"></input>
+						<input type="button" class="btn-navbar" value="Computers in Network" onclick="showComputersInNetworkForm();"></input>
+					</div>
+
+					<form id="new-computer-form" style="display: none" class="inner-form" enctype="multipart/form-data" action="../cgi-bin/insert_handler.cgi" method="post">
+						<input type="hidden" name="choice" value="new-computer"></input>
+						<table class="table" width="600"><tr>
+							<td valign="top">
+								<label for="computer-serial">Serial Number:</label>
+								<input id="new-computer-serial-input" type="text" name="serial"></input>
+								<label for="computer-serial">Name:</label>
+								<input id="new-computer-name-input" type="text" name="name"></input>
+
+								<label for="computer-network-name">Network:</label>
+								<select id="new-computer-network-select" name="network"></select>
+								<div id="computer-new-status" class="status" ></div>
+							</td>
+							<td valign="top">
+								<label for="computer-images">Images:</label>
+								<input id="new-computer-image-file-input" class="imageFiles" type="file"  name="image_files[]" multiple accept="image/*"></input>
+
+								<label for="computer-manual-url" style="margin-top: 10px;">Manual URL:</label>
+								<input id="new-computer-manual-url-input" type="text" name="manual"></input>
+
+								<label for="computer-manual-file">Manual Files:</label>
+								<input id="new-computer-manual-file-input" class="manualFiles" type="file" name="manual_files[]" multiple></input>
+							</td>
+							<td width="200">
+								<output id="list" style="display: block; max-height: 180px; width: 180px; overflow-y: auto; "></output>
+							</td>
+						</tr>
+						<tr><td colspan="3"><input class="action-btn btn" id="add-computer-btn" type="button" value="Add" style="width:220px" onClick="addNewComputer();"></input></td>
+						</tr></table>							
+					</form>
+
+
+
+					<form id="edit-computer-form" style="display: none" class="inner-form" enctype="multipart/form-data">
+						<input type="hidden" name="choice" value="new-computer"></input>
+						<table class="table" width="600"><tr>
+							<td valign="top">
+								<label for="computer-serial">Serial Number:</label>
+								<input id="edit-computer-serial-input" type="text" name="serial"></input>
+
+								<label for="computer-serial">Name:</label>
+								<input id="edit-computer-name-input" type="text" name="name"></input>
+
+								<label for="computer-network-name">Network:</label>
+								<select id="edit-computer-network-select" name="network"></select>
+								<div id="computer-new-status" class="status" ></div>
+							</td>
+							<td valign="top">
+								<label for="computer-images">Images:</label>
+								<div class="edit-images-container" id="edit-computer-images-container"></div>
+
+								<label for="computer-manual-url" style="margin-top: 10px;">Manual URL:</label>
+								<input id="edit-computer-manual-url-input" type="text" name="manual"></input>
+
+								<label for="computer-manual-file">Manual Files:</label>
+								<div class= "edit-manuals-container" id="edit-computer-manuals-container"></div>
+							</td>
+							<td class="zoomed" id="computer-edit-zoomed-image">
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<input class="action-btn btn" id="edit-computer-btn" type="button" value="Edit" style="width:110px" onClick="editComputer();">
+								</input>
+								<input class="action-btn btn" id="cancel-edit-computer-btn" type="button" value="Delete" style="width:110px" onclick="showNewComputerForm();"></input>
+						</td>
+						</tr></table>							
+					</form>
+
+					<form id="computers-in-network-form" style="display: none" class="inner-form">
+						<label for="network-name">Network:</label>
+						<select id="computer-network-select">
+						</select>
+						<br />
+						<input class="btn" type="button" value="Show" style="width:220px" onclick="showComputersInNetwork();"></input>
+						<div id="computer-network-status"></div>
+					</form>
+				</div>
+				<div class="pull-left table-container" style="margin-top: 320px; position: fixed; width: 792px;  margin-left: 2px;">
+					<div class="pull-right" style="margin-top: 10px;">
+						<label for="page-imit" class="pull-left" style="margin-right: 5px;">Results per page:</label>
+						<select id="computer-record-count-select"class="record-count-select pull-left">
+							<option selected="selected">50</option>
+							<option>100</option>
+							<option>150</option>
+							<option>200</option>
+						</select>
+					</div>
+					<table id="computers-table"class="table" style="margin-bottom: 0px; border: 2px solid #E1A550;">
+						<caption>Computers</caption>
+						<thead class="fixed"></thead>
+						<tbody class="table-body"></tbody>
+					</table>
+					<div id="computers-page-selector" class="page-selector pull-right" style="margin-right: 15px;">
+						<input id="computers-first-page" type="button" value="<<" class="pull-left btn" style="line-height: 16px;"></input>
+						<input id="computers-prev-page" type="button" value="<" class="pull-left btn" style="line-height: 16px;"></input>
+						<table class="pull-left">
+							<tr id="computers-page-select-table">
+								<td class="checked" >1</td>
+								<td>2</td>
+								<td>3</td>
+								<td>4</td>			
+							</tr>
+						</table>
+						<input id="computers-next-page" type="button" value=">" class="pull-left btn" style="line-height: 16px;"></input>
+						<input id="computers-last-page" type="button" value=">>" class="pull-left btn" style="line-height: 16px;"></input>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+
+
+
+
+
+			<div id="computer-parts" style="display: none" class="forms">
+				<div class="pull-left table-container">
+					<table id="computer-parts-table"class="table">
+						<thead class="fixed"></thead>
+						<tbody  class="table-body"></tbody>
+					</table>
+				</div>
+				<div class="pull-left">
+					<div class="navbar-inverse inner-form">
+						<input type="button" class="btn-navbar" value="New Part" onclick="showNewPartForm();"></input>
+						<input type="button" class="btn-navbar" value="Parts in Computer" onclick="showPartsInComputerForm();"></input>
+					</div>
+					<form id="new-part-form" style="display: none" class="inner-form">
+						<label for="new-part-model">Model:</label>
+						<select id="new-part-model-select">
+						</select>
+						<label for="new-part-computer">Computer:</label>
+						<select id="new-part-computer-select">
+						</select>
+						<br />
+						<label for="new-part-warranty" class="pull-left" style="margin-right:20px;">Warranty:</label>
+						<input id="hw-rad-yes" class="warranty-radio" type="radio" name="warranty" onclick="hwPartWarrantyShow();"value="yes">Yes
+						<input id="hw-rad-no" class="warranty-radio" type="radio" name="warranty" value="no" onclick="hwPartWarrantyHide();">No
+						<br />	
+						<br />
+						<div id="hw-warranty-container" style="display : none;"> 						
+							<label class="pull-left date" for="day">Year</label>
+						 	<label class="pull-left date" for="month">Month</label>
+						 	<label class="date" for="year">Day</label>
+						 	<select id="hw-part-year" style="width : 60px;" onchange="dayFill();"></select>
+						 	<select id="hw-part-month" style="width : 45px;" onchange="dayFill();"></select>
+							<select id="hw-part-day" style="width : 40px;"></select>		 		
+						</div>	
+
+						<input class="action-btn" type="button" value="Add" style="width:200px" onclick="addNewComputerPart();"></input>
+						<div id="new-hwpart-status"></div>			
+					</form>
+					<form id="parts-in-computer-form" style="display: none" class="inner-form">
+						<label for="new-part-computer">Computer:</label>
+						<select id="parts-in-computer-computer-select">
+						</select>	
+						<br />
+						<input class="action-btn" type="button" value="Show" style="width:200px"></input>
+					</form>
+				</div>
+			</div>
+
+			<div id="networks" style="display: none" class="forms">
+				<div class="pull-left table-container">
+					<table id="networks-table"class="table">
+						<thead class="fixed">
+							<tr><td>No</td><td>Name</td></tr>
+						</thead>
+						<tbody  class="table-body">
+						</tbody>
+					</table>
+				</div>
+				<div class="pull-left">
+					<form id="new-network-form" class="inner-form">
+						<label for="new-network-name">Network Name</label>
+						<input id="new-network-name-input" type="text"></input>
+						<br />		
+						<input class="action-btn" type="button" value="Add" style="width:200px"></input>			
+					</form>
+				</div>
+			</div>
+
+			<div id="network-devices" style="display: none" class="forms">
+				<div class="pull-left table-container">
+					<table id="network-devices-table"class="table">
+						<thead class="fixed">
+							<tr><td>No</td><td>Model</td><td>Warranty</td></tr>
+						</thead>
+						<tbody  class="table-body">
+						</tbody>
+					</table>
+				</div>
+					<div class="pull-left inner-form">
+						<div class="navbar-inverse">
+							<input type="button" class="btn-navbar" value="New Device" onclick="showNewNetworkDeviceForm();"></input>
+							<input type="button" class="btn-navbar" value="Devices in Network" onclick="showDevicesInNetworkForm();">
+							</input>
+						</div>
+						<form id="new-network-device-form" style="display: none" class="inner-form">
+							<label for="new-network-device-model">Model:</label>
+							<select id="new-network-device-model-select">
+							</select>
+							<label for="new-network-device-network">Network:</label>
+							<select id="new-network-device-network-select">
+							</select>
+							<label for="new-network-device-warranty">Warranty To:</label>
+							<input id="new-network-device-warraty-input" type="text"></input>
+							<br />		
+							<input class="action-btn" type="button" value="Add" style="width:200px"></input>			
+						</form>
+						<form id="devices-in-network-form" style="display: none" class="inner-form">
+							<label for="devices-in-network">Network:</label>
+							<select id="devices-in-network-select">
+							</select>	
+							<br />
+							<input class="action-btn" type="button" value="Show" style="width:200px"></input>
+						</form>
+					</div>
+			</div>
+
+			<div id="models" style="display: none" class="forms">
+				<div class="pull-left table-container">
+					<table id="models-table"class="table">
+						<thead class="fixed">
+							<tr><td>No</td><td>Model</td><td>Type</td></tr>
+						</thead>
+						<tbody  class="table-body">
+						</tbody>
+					</table>
+				</div>
+				<div class="pull-left inner-form">
+					<div class="navbar-inverse">
+						<input type="button" class="btn-navbar" value="New model" onclick="showNewModelForm();"></input>
+						<input type="button" class="btn-navbar" value="Models of Type" onclick="showModelsOfTypeForm();">
+						</input>
+					</div>
+					<form id="new-model-form" style="display: none" class="inner-form">
+						<label for="new-model-model">Model:</label>
+						<input id="new-model-model-input" type="text"></input>
+						</select>
+						<label for="new-model-type">Type:</label>
+						<select id="new-moedl-type-select">
+						</select>
+						<br />		
+						<input class="action-btn" type="button" value="Add" style="width:200px"></input>			
+					</form>
+					<form id="models-of-type-form" style="display: none" class="inner-form">
+						<label for="models-of-type">Type:</label>
+						<select id="models-of-type-select">
+						</select>	
+						<br />
+						<input class="action-btn" type="button" value="Show" style="width:200px"></input>
+					</form>
+				</div>
+			</div>
+
+			<div id="types" style="display: none" class="forms">
+				<div class="pull-left table-container">
+					<table id="types-table"class="table">
+						<thead class="fixed">
+							<tr><td>No</td><td>Type</td></tr>
+						</thead>
+						<tbody  class="table-body">
+						</tbody>
+					</table>
+				</div>
+				<div class="pull-left">
+					<form id="new-type-form" class="inner-form">
+						<label for="new-type-type">Type</label>
+						<input id="new-type-type-input" type="text"></input>
+						<br />		
+						<input class="action-btn" type="button" value="Add" style="width:200px"></input>			
+					</form>
+				</div>
+			</div>
+		</div>
+</form>
+	</body>
+</html>

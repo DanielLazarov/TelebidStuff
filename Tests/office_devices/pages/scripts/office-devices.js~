@@ -1,0 +1,922 @@
+﻿//Language Declaration
+
+//Generic select filler
+// function selectFill(data){
+//     var response = {};
+//     for(var key in data){
+//         var str = '';
+//         for(var i = 0; i < data[key].length; i++){
+//             var option = '';
+//             var obj = data[key][i];
+//             var count = 0;
+//             for(var key1 in obj){
+//                 if(count != 0){
+//                     option += ' ';
+//                 }
+//                 count ++;
+//                 option += obj[key1];
+//             }
+//             str += '<li value="' + option + '">' + option + '</li>';
+//         }
+//         response[key] = str;
+//     }
+//     return response;
+// }
+
+//Even betetr drop down filelr ;)
+function selectFill(data){
+        var str = '';
+
+        for(var i = 0; i < data.data.length; i++){
+
+            str += '<li value="' + data.data[i].id + '">' + data.data[i].value + '</li>';
+        }
+
+    return str;
+}
+
+
+//Main Menu
+function tableFill(data){
+    var hstr = '';
+    var str = '';
+    for(var i = 0; i < data.data.length; i++){  
+        var obj = data.data[i];
+        var cols = obj.length;
+        if(i == 0){
+            hstr += '<tr>';
+            for(var key in obj){
+                hstr += '<td>' + key + '</td>';
+            };
+            hstr +='<td>Options</td></tr>';
+        }
+        str += '<tr>';
+        for(var key in obj){
+            str += '<td>' + obj[key] + '</td>';
+        }   
+        str +='<td><input type="button" form="' + data.type + '"formtype="edit" class="btn view-btn" value="View"></input></td>';
+        str += '</tr>';                       
+    }
+    var obj = {"str" : str, "hstr" : hstr};
+    return obj;
+}
+
+function tableSelector(table,cryteria){
+        $('#'+table+'-search-btn').hide();
+        $('#'+table+'-search-loading').show();
+        $('#'+table+'-search').prop('disabled', true);
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/initial.cgi",
+        cache: false,
+        data: {"choice" : table,
+                "lang" : lang,
+                "cryteria": cryteria
+        },
+        success: function(data){
+            if(data.status == "OK"){
+                var obj = tableFill(data);
+                $("#" + table + "-table > thead").html(obj.hstr);
+                $("#" + table + "-table > tbody:last").html(obj.str);
+            }
+        },
+        error: function()
+        {
+            console.log("error getting network devices list");
+        }
+    }).done(function() {
+        $('#'+table+'-search-btn').show();
+        $('#'+table+'-search-loading').hide();
+        $('#'+table+'-search').prop('disabled', false);
+    });
+}
+function selectComputers() {
+    offset = 0;
+    $("#computers").hide();
+    $("#computer-parts").hide();
+    $("#models").hide();
+    $("#types").hide();
+    $("#network-devices").hide();
+    $("#networks").hide();
+    clearAll();
+}
+function selectComputerParts(){
+    offset = 0;
+    $("#computers").hide();
+    $("#computer-parts").show();
+    $("#models").hide();
+    $("#types").hide();
+    $("#network-devices").hide();
+    $("#networks").hide();
+    $("#hw-rad-no").prop('checked', true);
+    $('#hw-warranty-container').hide();
+    clearAll();
+}
+function selectModels(){
+    offset = 0;
+    $("#computers").hide();
+    $("#computer-parts").hide();
+    $("#models").show();
+    $("#types").hide();
+    $("#network-devices").hide();
+    $("#networks").hide();
+    clearAll();
+}
+function selectTypes(){
+    offset = 0;
+    $("#computers").hide();
+    $("#computer-parts").hide();
+    $("#models").hide();
+    $("#types").show();
+    $("#network-devices").hide();
+    $("#networks").hide();
+    clearAll();
+}
+function selectNetworkDevices(){
+    offset = 0;
+    $("#computers").hide();
+    $("#computer-parts").hide();
+    $("#models").hide();
+    $("#types").hide();
+    $("#network-devices").show();
+    $("#networks").hide();
+    clearAll();
+}
+function selectNetworks(){
+    offset = 0;
+    $("#computers").hide();
+    $("#computer-parts").hide();
+    $("#models").hide();
+    $("#types").hide();
+    $("#network-devices").hide();
+    $("#networks").show();
+    clearAll();
+}
+
+//Computer Forms
+// function showNewComputerForm(){
+//     $("#new-computer-form").show();
+//     $("#computers-in-network-form").hide();
+//     $("#edit-computer-form").hide();
+//     $.ajax({
+//         type: "get",
+//         url: "../cgi-bin/selects_filler.cgi",
+//         cache: false,
+//         data: {"choice" : "networks",
+//                 "cryteria" : ""},
+//         success: function(data){
+//             var obj = selectFill(data);
+//             $("#new-computer-network-options").html(obj.networks);
+//             //$("#new-computer-network-select").prop("selectedIndex", -1);
+//         },
+//         error: function()
+//         {
+//             console.log("error getting networks list");
+//         }
+//     });
+// }
+function showComputersInNetworkForm(){
+    $("#new-computer-form").hide();
+    $("#computers-in-network-form").show();
+    $("#edit-computer-form").hide();
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "networks"},
+        success: function(data){
+            var obj = selectFill(data);
+            $("#computer-network-select").html(obj.networks);
+            $("#computer-network-select").prop("selectedIndex", -1);
+        },
+        error: function()
+        {
+            console.log("error getting networks list");
+        }
+    });
+}
+
+//Warranty
+function yearFill(){
+    var date = new Date();
+    var year = date.getFullYear();
+    var str = '';
+    for(var i = year; i < year + 20; i++){
+        str+='<option value="' + i + '">' + i +'</option>';
+    }
+    $("#hw-part-year").html(str);
+    monthFill();
+    dayFill();
+    
+}
+
+function monthFill(){
+    var str = '';
+    for(var i = 1; i <= 12; i++){
+        str+='<option value="' + i + '">' + i +'</option>';
+    }
+    $("#hw-part-month").html(str);
+}
+
+function hwPartWarrantyShow(){
+    yearFill();
+    $("#hw-part-day").prop("selectedIndex", -1);
+    $("#hw-warranty-container").show();
+}
+function hwPartWarrantyHide(){
+    $("#hw-warranty-container").hide();
+}
+
+function initialDayFill(){
+    var str ='';
+    for (var i = 1; i <= 31; i++){
+        str+='<option value="' + i + '">' + i +'</option>';
+    };
+    $("#hw-part-day").html(str);
+}
+
+function dayFill(){
+    var month = $("#hw-part-month").val();
+    var year = $("#hw-part-year").val();
+    var str ='';
+    for (var i = 1; i <= 28; i++){
+        str+='<option value="' + i + '">' + i +'</option>';
+    };
+    switch(month){
+        case '1': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            str+='<option value="' + 31 + '">' + 31 +'</option>';
+            break;
+        
+        case '2': 
+            if(new Date(year, 1, 29).getMonth() == 1){
+                str+='<option value="' + 29 + '">' + 29 +'</option>';
+            }
+            break;
+        
+        case '3': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            str+='<option value="' + 31 + '">' + 31 +'</option>';
+            break;
+        
+        case '4': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            break;
+        
+        case '5': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            str+='<option value="' + 31 + '">' + 31 +'</option>';
+            break;
+        
+        case '6': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            break;
+        
+        case '7': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            str+='<option value="' + 31 + '">' + 31 +'</option>';
+            break;
+        
+        case '8': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            str+='<option value="' + 31 + '">' + 31 +'</option>';
+            break;
+        
+        case '9': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            break;
+        
+        case '10': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            str+='<option value="' + 31 + '">' + 31 +'</option>';
+            break;
+        
+        case '11': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            break;
+        
+        case '12': 
+            str+='<option value="' + 29 + '">' + 29 +'</option>';
+            str+='<option value="' + 30 + '">' + 30 +'</option>';
+            str+='<option value="' + 31 + '">' + 31 +'</option>';
+            break;      
+    }
+    $("#hw-part-day").html(str);
+}
+
+//Part Forms
+function showNewPartForm(){
+    $("#hw-rad-no").prop('checked', true);
+    $("#new-part-form").show();
+    $("#parts-in-computer-form").hide();
+    $('#hw-warranty-container').hide();
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "computers-and-hwmodels"},
+        success: function(data){
+            var str = ''; 
+            for(var i = 0; i < data.computers.length; i++){
+                str+='<option value="' + data.computers[i].name + '">' + data.computers[i].name +'</option>';
+            }
+            $("#new-part-computer-select").html(str);
+            $("#new-part-computer-select").prop("selectedIndex", -1);
+
+
+            str = '';
+            for(var i = 0; i < data.models.length; i++){
+                str+='<option value="' + data.models[i].model + '">' + data.models[i].model +'</option>';
+            }
+            $("#new-part-model-select").html(str);
+            $("#new-part-model-select").prop("selectedIndex", -1);
+
+        },
+        error: function()
+        {
+            console.log("error getting computers and models list");
+        }
+    });
+}
+function showPartsInComputerForm(){
+    $("#new-part-form").hide();
+    $("#parts-in-computer-form").show();
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "computers"},
+        success: function(data){
+
+            var str = ''; 
+            for(var i = 0; i < data.computers.length; i++){
+                str+='<option value="' + data.computers[i].name + '">' + data.computers[i].name +'</option>';
+            }
+            $("#parts-in-computer-computer-select").html(str);
+            $("#parts-in-computer-computer-select").prop("selectedIndex", -1);
+        },
+        error: function()
+        {
+            console.log("error getting computers list");
+        }
+    });
+}
+
+//Network Devices Forms
+function showNewNetworkDeviceForm(){
+    $("#new-network-device-form").show();
+    $("#devices-in-network-form").hide();
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "networks-and-networkmodels"},
+        success: function(data){
+            var str = ''; 
+            for(var i = 0; i < data.networks.length; i++){
+                str+='<option value="' + data.networks[i].name + '">' + data.networks[i].name +'</option>';
+            }
+            $("#new-network-device-network-select").html(str);
+            $("#new-network-device-network-select").prop("selectedIndex", -1);
+
+            str = '';
+            for(var i = 0; i < data.models.length; i++){
+                str+='<option value="' + data.models[i].model + '">' + data.models[i].model +'</option>';
+            }
+            $("#new-network-device-model-select").html(str);
+            $("#new-network-device-model-select").prop("selectedIndex", -1);
+        },
+        error: function()
+        {
+            console.log("error getting computers and models list");
+        }
+    });
+
+}
+function showDevicesInNetworkForm(){
+    $("#new-network-device-form").hide();
+    $("#devices-in-network-form").show();
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "networks"},
+        success: function(data){
+            var str = '';
+            
+            for(var i = 0; i < data.networks.length; i++){
+                str+='<option value="' + data.networks[i].name + '">' + data.networks[i].name +'</option>';
+            }
+            $("#devices-in-network-select").html(str);
+            $("#devices-in-network-select").prop("selectedIndex", -1);
+        },
+        error: function()
+        {
+            console.log("error getting networks list");
+        }
+    });
+}
+
+//Models Forms
+function showNewModelForm(){
+    $("#new-model-form").show();
+    $("#models-of-type-form").hide();
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "types"},
+        success: function(data){
+            var str = '';
+            
+            for(var i = 0; i < data.types.length; i++){
+                str+='<option value="' + data.types[i].type + '">' + data.types[i].type +'</option>';
+            }
+            $("#new-moedl-type-select").html(str);
+            $("#new-moedl-type-select").prop("selectedIndex", -1);
+        },
+        error: function()
+        {
+            console.log("error getting networks list");
+        }
+    });
+}
+function showModelsOfTypeForm(){
+    $("#new-model-form").hide();
+    $("#models-of-type-form").show();
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "types"},
+        success: function(data){
+            var str = '';
+            
+            for(var i = 0; i < data.types.length; i++){
+                str+='<option value="' + data.types[i].type + '">' + data.types[i].type +'</option>';
+            }
+            $("#models-of-type-select").html(str);
+            $("#models-of-type-select").prop("selectedIndex", -1);
+        },
+        error: function()
+        {
+            console.log("error getting networks list");
+        }
+    });
+}
+
+function showComputersInNetwork(){
+    if($("#computer-network-select").val()){
+        network = $("#computer-network-select").val();
+        $.ajax({
+            type: "get",
+            url: "../cgi-bin/show_handler.cgi",
+            cache: false,
+            data: {"choice" : "computers",
+                    "network" : network
+                },
+            success: function(data){
+                status = '<p>Done!</p>';
+                $("#computer-network-status").html(status);
+                var str = '';
+                
+                            var obj = tableFill(data);
+            $("#computers-table > thead").html(obj.hstr);
+            $("#computers-table > tbody:last").html(obj.str);
+            },
+            error: function()
+            {
+                console.log("error getting computers list");
+            }
+        }); 
+    }
+    else{
+        status='<p>*Please Select a Network</p>';
+        $("#computer-network-status").html(status);
+    }
+}
+//------------Computer Forms------------------- 
+//WORKING!!!
+function addNewComputer(){
+    var status;
+    var totalSize = 0;
+    var imagesOnly=true;
+    var files = $('#new-computer-image-file-input')[0].files;
+    if(files.length <= 10){
+        for (var i = files.length - 1; i >= 0; i--) {
+            totalSize += files[i].size;
+        };
+        if(totalSize <= 2048000){
+            $('#add-computer-btn').prop('disabled', true);
+            for (var i = files.length - 1; i >= 0; i--) {
+                if (!files[i].type.match('image.*')) {
+                    imagesOnly = false;
+                }
+            };
+            if(imagesOnly){
+                if($("#new-computer-serial-input").val()){
+                    $("#new-computer-form input[type=text], #new-computer-form input[type=file]", "#new-computer-network-select").prop('disabled', true);
+                    $.ajax({
+                        type: "post",
+                        url: "../cgi-bin/insert_handler.cgi",
+                        cache: false,
+                        data: new FormData($('#new-computer-form')[0]),
+                        processData:false,
+                        contentType: false,
+                        success: function(data){
+                            $("#new-computer-form input[type=text], #new-computer-form input[type=file]", "#new-computer-network-select").prop('disabled', false);
+                            if(data.status == "TAKEN"){
+                                console.log('taken');
+                                console.log(JSON.stringify(data));
+                                status = '<p>Serial number already exists!</p>';
+                            }
+                            else if(data.status == "OK"){
+                                console.log('ok');
+                                console.log(JSON.stringify(data));
+                                status = '<p>Done!</p>';
+                                clearAll();
+                                $("#new-computer-network-select").prop("selectedIndex", -1);
+                            }
+                            else{
+                               status = '<p>There was a problem inserting new PC!</p>'; 
+                               console.log('problems bro');
+                               console.log(JSON.stringify(data));
+                            }
+                            $('#add-computer-btn').prop('disabled', false);
+                            $("#computer-new-status").html(status);
+                            tableSelector('computers',0);
+                        },
+                        error: function(data)
+                        {
+                            $("#new-computer-form input[type=text], #new-computer-form input[type=file]", "#new-computer-network-select").prop('disabled', false);
+                            status = '<p>There was a problem inserting new PC!</p>';
+                            $("#computer-new-status").html(status);
+                            $('#add-computer-btn').prop('disabled', false);
+                        }
+                    });
+                }
+                else{ 
+                    status='<p>*Please Enter a Serial Number</p>';
+                    $("#computer-new-status").html(status);
+                    $('#add-computer-btn').prop('disabled', false);
+                }
+
+            }
+            else{
+                status='<p class="status" >*Only Images are accepted</p>';
+                $("#computer-new-status").html(status);
+                $('#add-computer-btn').prop('disabled', false);
+            }
+        }
+        else{
+            status='<p>*Max total size of files allowed is 2Mb</p>';
+            $("#computer-new-status").html(status);
+            $('#add-computer-btn').prop('disabled', false);
+        }
+    }
+    else{
+        status='<p class="status" >*Max number of files allowed is 10</p>';
+        $("#computer-new-status").html(status);
+        $('#add-computer-btn').prop('disabled', false);
+    }
+}
+function editComputer(){
+    $("#edit-computer-form input[type=text], #edit-computer-form input[type=file], #edit-computer-form select").prop('disabled', false);
+    $("#edit-computer-serial-input").prop('disabled', true);
+    $("#edit-computer-btn").hide();
+    $("#delete-computer-btn").hide();
+    $("#save-edit-computer-btn").show();
+    $("#cancel-edit-computer-btn").show();
+}
+function cancelEditComputer(){
+    $("#edit-computer-form input[type=text], #edit-computer-form input[type=file], #edit-computer-form select").prop('disabled', true);
+    $("#edit-computer-btn").show();
+    $("#delete-computer-btn").show();
+    $("#save-edit-computer-btn").hide();
+    $("#cancel-edit-computer-btn").hide();
+}  
+function saveEditComputer(){
+    $("#edit-computer-btn").show();
+    $("#delete-computer-btn").show();
+    $("#save-edit-computer-btn").hide();
+    $("#cancel-edit-computer-btn").hide();
+    $("#edit-computer-form input[type=text], #edit-computer-form input[type=file], #edit-computer-form select").prop('disabled', true);
+    $.ajax({
+        type: "post",
+        url: "../cgi-bin/update_handler.cgi",
+        cache: false,
+        data: {"choice" : "computer",
+            "serial" : $('#edit-computer-serial-input').val(),
+            "name" : $('#edit-computer-name-input').val(),
+            "network" : $('#edit-computer-network-select').val(),
+            "manual" : $('#edit-computer-manual-url-input').val()
+        },
+        success: function(data){
+        },
+        error: function(){
+
+        }
+    });
+}
+
+function deleteComputer(){
+    $('#delete-computer-btn').prop('disabled', true);
+    if (confirm('Are you sure you want to save this thing into the database?')) {
+        $.ajax({
+            type: "post",
+            url: "../cgi-bin/delete_handler.cgi",
+            cache: false,
+            data: {"choice" : "computer",
+                "serial" : $('#edit-computer-serial-input').val()
+            },
+            success: function(data){
+                    tableSelector('computers',0);
+                    $('#edit-computer-form').hide();
+                    $('#delete-computer-btn').prop('disabled', false);
+            },
+            error: function(){
+                $('#delete-computer-btn').prop('disabled', false);
+            }
+        });
+    } 
+    else {
+        $('#delete-computer-btn').prop('disabled', false);
+    }
+}
+
+
+function addNewComputerPart(){
+    var status = '';
+    var model;
+    var computerName;
+    var warranty;
+    var dateIsEntered = true;
+
+    if($("#new-part-model-select").val()){
+        model = $("#new-part-model-select").val();
+        if($("#new-part-computer-select").val()){
+            computerName = $("#new-part-computer-select").val();
+            if($('#hw-warranty-container').is(':visible')){
+                if($("#hw-part-day").val()){
+                    warranty = $("#hw-part-year").val() + '-' + $("#hw-part-month").val() + '-' + $("#hw-part-day").val()
+                }
+                else{
+                    dateIsEntered = false;
+                }
+            }   
+            else{
+                warranty = '';
+            }
+            if(dateIsEntered){  
+                $.ajax({
+                    type: "get",
+                    url: "../cgi-bin/insert_handler.cgi",
+                    cache: false,
+                    data: {"choice" : "new-hw-part",
+                            "model" : model,
+                            "computer" : computerName,
+                            "warranty" : warranty
+                        },
+                    success: function(data){
+                        status = '<p>Part Inserted!</p>';
+                        $("#new-hwpart-status").html(status);
+                        var str = '';
+                       
+                        for(var i = 0; i < data.length; i++){
+                            str += '<tr><td>' + i + '</td><td>' + data.hw_parts[i].model + '</td>' + '</td><td>' + data.hw_parts[i].warranty + '</td></tr>';
+                        }
+                        $("#computer-parts-table > tbody:last").html(str);
+                    },
+                    error: function()
+                    {
+                        console.log("error inserting new hw part");
+                    }
+                });
+            }
+            else{
+                status='<p>*Please Select a warranty Date</p>';
+                $("#new-hwpart-status").html(status); 
+            }
+        }
+        else{
+            status='<p>*Please Select a Computer</p>';
+            $("#new-hwpart-status").html(status);
+        }
+    }
+    else{ 
+        status='<p>*Please Select a Model</p>';
+        $("#new-hwpart-status").html(status);
+    }
+}
+
+function showEditForm(table){
+    var row = $(this).closest('tr'),
+    btnCell = $(this).parent(),
+    name = row.find('td:nth-child(1)').text();
+    $("#" + table + "-edit-status").html('');
+    $("#edit-" + table + "-form").show();
+    $("#new-" + table + "-form").hide();
+    $("#" + table + "-in-network-form").hide();
+    $("#edit-" + table + "-name-input").val(name);
+    computerNameEdditted = name;
+
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "networks"},
+        success: function(data){
+            var obj = selectFill(data);
+            $("#edit-" + table + "-network-select").html(obj.networks);
+            $("#edit-" + table + "-network-select").val('none');
+        },
+        error: function()
+        {
+         console.log("error getting networks list");
+        }
+    });
+}
+
+function clearAll(){
+    $('input[type=text], input[type=file]').val('');
+    $('#list').html('');
+    //$("select").prop("selectedIndex", -1);
+}
+
+
+function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+    document.getElementById('list').innerHTML = '';
+    document.getElementById('computer-new-status').innerHTML = '';
+    var size = 0;
+    if(files.length <= 10){
+        for (var i = files.length - 1; i >= 0; i--) {
+            size += files[i].size;
+        };
+        if(size<=2048000){
+            // Loop through the FileList and render image files as thumbnails.
+            for (var i = 0, f; f = files[i]; i++) {
+
+          // Only process image files.
+            if (!f.type.match('image.*')) {
+                document.getElementById('list').innerHTML = '<p class="status" >*Only Images are accepted</p>';
+                break;
+            }
+
+            var reader = new FileReader();
+
+          // Closure to capture the file information.
+            reader.onload = (function(theFile) {
+                return function(e) {
+              // Render thumbnail.
+                    var span = document.createElement('span');
+                    span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                                '" title="', escape(theFile.name), '"/>'].join('');
+                    document.getElementById('list').insertBefore(span, null);
+                    };
+                })(f);
+
+          // Read in the image file as a data URL.
+                reader.readAsDataURL(f);
+            }
+
+        }
+        else{
+            document.getElementById('computer-new-status').innerHTML = '<p>*Max total size of files allowed is 2Mb</p>';
+        }
+    }
+    else{
+        document.getElementById('computer-new-status').innerHTML = '<p>*Max number of files allowed is 10</p>';
+    }
+}
+
+function viewComputer(table,element){
+    var row = element.closest('tr'),
+    btnCell = element.parent(),
+    serial = row.find('td:nth-child(1)').text();
+    $("#computers-edit-status").html('');
+    $("#edit-computer-form").show();
+    $("#new-computer-form").hide();
+    $("#computer-in-network-form").hide();
+    $("#edit-computer-serial-input").val(serial);
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/selects_filler.cgi",
+        cache: false,
+        data: {"choice" : "networks"},
+        success: function(data){
+            var obj = selectFill(data);
+            $("#edit-computer-network-select").html(obj.networks);
+        },
+        error: function()
+        {
+            console.log("error getting networks list");
+        }
+    });
+    $.ajax({
+        type: "get",
+        url: "../cgi-bin/view_handler.cgi",
+        cache: false,
+        data: {"choice" : "computer",
+                "serial" : serial
+            },
+        success: function(data){
+            console.log(data);
+            $('#edit-computer-name-input').val(data.name);
+            $('#edit-computer-network-select').val(data.network);
+            $('#edit-computer-manual-url-input').val(data.manual);
+            var imgstr = '';
+            var manstr = '';
+            for (var i = data.images.length - 1; i >= 0; i--) {
+                imgstr += '<img src="../uploads/computers/images/' + data.images[i].path + '"></img>';
+            };
+            $('#edit-computer-images-container').html(imgstr);
+            for (var i = data.manuals.length - 1; i >= 0; i--) {
+                manstr += '<a href="../uploads/computers/manuals/' + data.manuals[i].path + '" >' + data.manuals[i].path  + '</a>'
+                data.manuals[i].path
+            };
+            console.log(manstr);
+            $('#edit-computer-manuals-container').html(manstr);
+            $("#edit-computer-form input[type=text], #edit-computer-form input[type=file], #edit-computer-form select").prop('disabled', true);
+        },
+        error: function()
+        {
+            console.log("error creating view of the selected computer");
+        }
+    });
+} 
+
+
+
+
+
+
+//---------------REQUEST------------------
+function request(type,url,dataToSend,preRequestParam,successParam,errorParam,doneParam){
+    preRequestFunction(preRequestParam);
+    $('input[type="button"]').prop('disabled', true);
+    console.log(JSON.stringify(dataToSend));
+    $.ajax({
+        type: type,
+        url: url,
+        cache: false,
+        data: dataToSend,
+        success : function(data){
+            successFunction(successParam,data);
+            $('input[type="button"]').prop('disabled', false);
+        },
+        error : function(data){
+            errorFunction(errorParam,data);
+            $('input[type="button"]').prop('disabled', false);
+        }
+    });
+}
+function preRequestFunction(param,data){
+
+    if(param == 'form'){
+        //Loading...
+        console.log('started');
+    }
+}
+function successFunction(param,data){
+
+    if(param == 'form'){
+        //Load form
+        $('#form-container').html(data);
+    }
+}
+function errorFunction(param,data){
+
+    if(param == 'form'){
+        //Error getting the form
+        $('#form-container').html('An error occured while loading the form');
+        console.log('error');
+    }
+}
+function doneFunction(param,data){
+
+    if(param == 'form'){
+        //Request done
+        console.log('done');
+    }
+}
+
+
+function getForm(form,key,keyvalue){
+    var data = {};
+    data.action = 'generate_form';
+    data.form = form;
+    data.key = key;
+    data.key_value = keyvalue;
+    request('post','../cgi-bin/form_generator.cgi',data,'form','form','form','form');
+}

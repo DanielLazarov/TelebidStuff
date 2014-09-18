@@ -1,0 +1,4 @@
+Rows from SELECT: DBI::st=HASH(0x1605f70)
+Rows from SELECT: DBI::st=HASH(0x114cf40)->rows
+00INERTED: Daniel Lazarov 872150079480838 https://www.facebook.com/app_scoped_user_id/872150079480838/
+1

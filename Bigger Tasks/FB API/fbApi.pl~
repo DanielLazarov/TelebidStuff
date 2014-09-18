@@ -1,0 +1,13 @@
+use WWW::Facebook::API;
+use warnings;
+use strict;
+use Data::Dumper;
+
+
+  my $client = WWW::Facebook::API->new(
+        desktop => 0,
+        api_key => '1450076325256773',
+        secret => 'b31c615777fb04739d122ab1e27a6571',
+    );
+    my $friends_perl = $client->friends->get;
+    print Dumper $friends_perl;

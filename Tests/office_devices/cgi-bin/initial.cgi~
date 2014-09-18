@@ -1,0 +1,193 @@
+#!/usr/bin/perl
+use CGI;
+use strict;
+use DBI;
+use warnings;
+use Encode;
+my $dbUser = "pg_user";
+my $host = "localhost";
+my $db = "office_devices";
+my $pw = "564564";
+print "Content-type: application/json\n\n";
+my $conn = DBI->connect("DBI:Pg:dbname=".$db."; host=" . $host, $dbUser, $pw) || die "Could not connect to database";
+
+my $cgi = CGI->new;
+my $choice = $cgi->param("choice");
+my $lang = $cgi->param("lang");
+my $offset = $cgi->param("offset");
+my $limit = $cgi->param("limit");
+
+if($choice eq "computers") {
+	#my $lscmd = "SELECT TC.translated_name FROM translated_columns as TC JOIN columns AS C on C.id = TC.column_id JOIN languages as L ON L.id = TC.language_id WHERE C.column_name = ? AND L.language = ?";
+	#my $lrows = $conn->prepare($lscmd);
+	#$lrows->execute("host_name",$lang);
+	#my $lref = $lrows->fetchrow_hashref();
+	#my $translated = decode_utf8( $lref->{'translated_name'} );
+	
+	
+	my $scmd = "SELECT serial_num, date_updated, (SELECT count(*) AS count FROM computers) FROM computers WHERE serial_num != 'none' ORDER BY date_updated DESC LIMIT ? OFFSET ?";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute($limit,$offset) || die "couldnt fetch computers\n";	
+	my $count;
+
+	my $response = '{ "type": "computers", "data" :[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}	
+		my $name = decode_utf8( $ref->{'serial_num'} ); 
+		$count = decode_utf8( $ref->{'count'} );
+		$response .= '{"serial":' . "\"$name\"}";
+		$comma = 1; 
+	}
+
+	$response .= '], "count" : "' . $count . '"}';
+	print $response;
+}
+
+
+elsif($choice eq "networks") {
+	my $lscmd = "SELECT TC.translated_name FROM translated_columns as TC JOIN columns AS C on C.id = TC.column_id JOIN languages as L ON L.id = TC.language_id WHERE C.column_name = ? AND L.language = ?";
+	my $lrows = $conn->prepare($lscmd);
+	$lrows->execute("name",$lang);
+	my $lref = $lrows->fetchrow_hashref();
+	my $translated = decode_utf8( $lref->{'translated_name'} );
+
+	my $scmd = "SELECT name FROM networks";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch networks\n";	
+	my $response = '{"data":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $name = decode_utf8( $ref->{'name'} ); 
+		$response .= "{\"$translated\":" . "\"$name\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+}
+
+elsif($choice eq "models") {
+	my $lscmd = "SELECT TC.translated_name FROM translated_columns as TC JOIN columns AS C on C.id = TC.column_id JOIN languages as L ON L.id = TC.language_id WHERE C.column_name = ? AND L.language = ?";
+	my $lrows = $conn->prepare($lscmd);
+	$lrows->execute("model",$lang);
+	my $lref = $lrows->fetchrow_hashref();
+	my $translatedm = decode_utf8( $lref->{'translated_name'} );
+	$lrows->execute("type",$lang);
+	$lref = $lrows->fetchrow_hashref();
+	my $translatedt = decode_utf8( $lref->{'translated_name'} );
+
+	my $scmd = "SELECT models.model,types.type FROM models JOIN types ON models.type_id = types.id";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch types or models\n";	
+	my $response = '{"data":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $type = decode_utf8( $ref->{'type'} );
+		my $model = decode_utf8( $ref->{'model'} ); 
+		$response .= "{\"$translatedm\":" . "\"$model\"," . "\"$translatedt\":" . "\"$type\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+}
+
+elsif($choice eq "types") {
+	my $lscmd = "SELECT TC.translated_name FROM translated_columns as TC JOIN columns AS C on C.id = TC.column_id JOIN languages as L ON L.id = TC.language_id WHERE C.column_name = ? AND L.language = ?";
+	my $lrows = $conn->prepare($lscmd);
+	$lrows->execute("type",$lang);
+	my $lref = $lrows->fetchrow_hashref();
+	my $translated = decode_utf8( $lref->{'translated_name'} );
+
+	my $scmd = "SELECT type FROM types";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch types\n";	
+	my $response = '{"data":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $type = decode_utf8( $ref->{'type'} ); 
+		$response .= "{\"$translated\":" . "\"$type\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+}
+
+elsif($choice eq "network-devices") {
+	my $lscmd = "SELECT TC.translated_name FROM translated_columns as TC JOIN columns AS C on C.id = TC.column_id JOIN languages as L ON L.id = TC.language_id WHERE C.column_name = ? AND L.language = ?";
+	my $lrows = $conn->prepare($lscmd);
+	$lrows->execute("model",$lang);
+	my $lref = $lrows->fetchrow_hashref();
+	my $translatedm = decode_utf8( $lref->{'translated_name'} );
+	$lrows->execute("warranty",$lang);
+	$lref = $lrows->fetchrow_hashref();
+	my $translatedw = decode_utf8( $lref->{'translated_name'} );
+
+	my $scmd = "SELECT models.model,network_devices.warranty FROM models JOIN network_devices ON network_devices.model_id = models.id";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch network_devices or models\n";
+	my $response = '{"data":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $warranty = decode_utf8( $ref->{'warranty'} );
+		my $model = decode_utf8( $ref->{'model'} ); 
+		$response .= "{\"$translatedm\":" . "\"$model\"," . "\"$translatedw\":" . "\"$warranty\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+}
+
+elsif($choice eq "computer-parts") {
+	my $lscmd = "SELECT TC.translated_name FROM translated_columns as TC JOIN columns AS C on C.id = TC.column_id JOIN languages as L ON L.id = TC.language_id WHERE C.column_name = ? AND L.language = ?";
+	my $lrows = $conn->prepare($lscmd);
+	$lrows->execute("model",$lang);
+	my $lref = $lrows->fetchrow_hashref();
+	my $translatedm = decode_utf8( $lref->{'translated_name'} );
+	$lrows->execute("warranty",$lang);
+	$lref = $lrows->fetchrow_hashref();
+	my $translatedw = decode_utf8( $lref->{'translated_name'} );
+		
+	my $scmd = "SELECT models.model,hardware_parts.warranty FROM models JOIN hardware_parts ON hardware_parts.model_id = models.id";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch hardware_parts or models\n";	
+	my $response = '{"data":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $warranty = decode_utf8( $ref->{'warranty'} );
+		my $model = decode_utf8( $ref->{'model'} ); 
+		$response .= "{\"$translatedm\":" . "\"$model\"," . "\"$translatedw\":" . "\"$warranty\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+}
+
+

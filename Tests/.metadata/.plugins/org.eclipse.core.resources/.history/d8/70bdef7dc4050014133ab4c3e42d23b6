@@ -1,0 +1,17 @@
+import java.util.Stack;
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	public static void checkStack(){
+		Stack<String> st = new Stack<String>();
+		System.out.println(st.capacity());
+	}
+
+}

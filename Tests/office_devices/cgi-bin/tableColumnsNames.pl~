@@ -1,0 +1,58 @@
+use strict;
+use warnings;
+use DBI;
+use Try::Tiny;
+
+my $dbName = "office_devices";
+my $host = "localhost";
+my $user = "pg_user";
+my $pw = "564564";
+my $schemaName = "public"; #Change if needed
+try{
+    my $dbh = DBI->connect("DBI:Pg:dbname=$dbName; host=$host", $user, $pw) or die "Could not connect to database";
+
+    #Get all table names
+    my $sth = $dbh->table_info('', $schemaName, '%', 'TABLE');
+    my $result = $dbh->selectcol_arrayref($sth, {Columns => [3]});
+    my @tableNames = @$result;
+
+
+
+    for(my $i = 0; $i <= $#tableNames; $i++)
+    {
+        #Get all Column names
+    	my $table = $dbh->quote_identifier($tableNames[$i]);
+        my $cmd = "SELECT * FROM $table LIMIT 1";
+        $sth = $dbh->prepare($cmd);
+        $sth->execute();
+        my @names = @{$sth->{NAME}};
+
+        for(my $j = 0; $j <= $#names; $j++)
+        {
+	       # my $scmd = "SELECT * FROM meta_data_inputs WHERE table_name = ? AND column_name = ?";
+           # my $ssth = $dbh->prepare($scmd);
+           # $ssth->execute($tableNames[$i], $names[$j]);
+           # if($ssth->rows == 0)
+            #{
+            #    my $icmd = "INSERT INTO meta_data_inputs(table_name, column_name) VALUES(?,?)";
+             #   $sth = $dbh->prepare($icmd);
+            #    $sth->execute($tableNames[$i], $names[$j]);
+            #    print "INSERTED in table:" . $tableNames[$i] . " Column: " . $names[$j];
+            #}
+
+            my $ucmd = "UPDATE SET name = ? WHERE table_name = ? AND column_name = ?";
+            my $usth = $dbh->prepare($ucmd);
+            $usth->execute($names[$j],$tableNames[$i], $names[$j])
+        }
+
+
+
+        #my $icmd = "INSERT INTO meta_data_tables(table_name) VALUES(?)";
+        #$sth = $dbh->prepare($icmd);
+        #$sth->execute($tableNames[$i]);
+    }
+}
+catch
+{
+    warn "caught error: $_";
+};

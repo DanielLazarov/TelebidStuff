@@ -1,0 +1,321 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+
+use DBI;
+use Encode;
+use File::Basename;
+use Try::Tiny;
+use Carp::Assert;
+use CGI::Session;
+use CGI qw/:standard/;
+use CGI::Carp 'fatalsToBrowser';
+    $CGI::POST_MAX=1024 * 100;  # max 100K posts
+
+my %HoF = (
+    'computers'         =>  \&insertComputer,
+    'hardware_parts'    =>  \&insertComputerPart,
+    'networks'          =>  \&insertNetwork,
+    'network_devices'   =>  \&insertNetworkDevice,
+    'models'            =>  \&insertModel,
+    'types'             =>  \&insertType,
+    'length_error'      =>  \&lengthError,
+    'error'             =>  \&errorOutput,
+    'not_loggedin'      =>  \&notLoggedInOutput,
+    'session_header'    =>  \&printSessionHeader,
+);
+
+# my %HoIC = (
+#     'computers'         =>  \&insertComputer,
+#     'hardware_parts'    =>  \&insertComputerPart,
+#     'networks'          =>  \&insertNetwork,
+#     'network_devices'   =>  \&insertNetworkDevice,
+#     'models'            =>  \&insertModel,
+#     'types'             =>  \&insertType,
+# );
+
+# my %HoUC = (
+#     'computers'         =>  \&insertComputer,
+#     'hardware_parts'    =>  \&insertComputerPart,
+#     'networks'          =>  \&insertNetwork,
+#     'network_devices'   =>  \&insertNetworkDevice,
+#     'models'            =>  \&insertModel,
+#     'types'             =>  \&insertType,
+# );
+
+# my %HoDC = (
+#     'computers'         =>  \&insertComputer,
+#     'hardware_parts'    =>  \&insertComputerPart,
+#     'networks'          =>  \&insertNetwork,
+#     'network_devices'   =>  \&insertNetworkDevice,
+#     'models'            =>  \&insertModel,
+#     'types'             =>  \&insertType,
+# );
+
+my $dbName = "office_devices";
+my $host = "localhost";
+my $user = "pg_user";
+my $pw = "564564";
+
+my $dbh;
+my $cgi = CGI->new;
+
+my $session;
+my $cookieSessionID;
+my $cookieLanguage;
+my $cookieUsername;
+
+my $somedata = $cgi->Vars;
+open RPCFILE, "> rpctest1.txt";
+print RPCFILE Dumper($somedata);
+close RPCFILE;
+
+try{
+    if(cookie('CGISESSID'))
+    {
+        $session = CGI::Session->load(cookie('CGISESSID')); 
+        $cookieSessionID = CGI::Cookie->new(-name=>$session->name, -value=>$session->id, -expires =>  '+20s');
+        $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>cookie('username'));
+        $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>cookie('language'));
+        out('session_header');
+
+        if($cgi->param("action"))
+        {
+            $dbh = DBI->connect(
+                "DBI:Pg:dbname=$dbName; host=$host",
+                $user, 
+                $pw, 
+                {
+                    AutoCommit => 0,    
+                    RaiseError => 1,
+                }
+            );
+            out($cgi->param("choice"));
+        }   
+        else
+        {
+            out('length_error');
+        }
+    }
+    else
+    {
+        out('not_loggedin');
+    }
+}
+catch
+{
+    open(ERROR, "> error.txt");
+    print ERROR $_;
+    close ERROR;
+    out('error');
+};
+
+sub out
+{
+    my $cmd = $_[0];
+    print $HoF{lc $cmd}->();
+}
+
+sub notLoggedInOutput
+{
+    my $response = '{"status": "loggedout"}';
+    return $cgi->header(-type=>'application/json', -charset=>'utf-8'), $response;
+}
+
+sub printSessionHeader
+{
+    return $session->header(
+                -cookie=>[$cookieSessionID,$cookieUsername,$cookieLanguage],
+                -type=>'application/json',
+                -charset=>'utf-8'
+            );
+}
+
+
+sub insertComputer
+{
+    my $upload_dir = "/home/daniel/Repositories/TelebidStuff/Tests/office_devices/uploads/computers";
+
+    my $addbtn = $cgi->param("action");
+    open (BUTTON, "> button.txt");
+    print BUTTON $addbtn;
+    close BUTTON;
+
+    my $serial = $cgi->param("serial_num");
+    my $name_bg = $cgi->param("computer_name_bg");
+    my $name_en = $cgi->param("computer_name_en");
+    my $network = $cgi->param("network_id");
+    my $manualURL = $cgi->param("manual_url");
+
+    #single files
+    my $imagesInput = $cgi->param("has_image_files");
+    my $imageHandlers = $cgi->upload("has_image_files");
+    my $manualsInput = $cgi->param("has_manual_files");
+    my $manualHandlers = $cgi->upload("has_manual_files");
+
+    # #multiple Files
+    # my @imagesInput = $cgi->param("has_image_files");
+    # my @imageHandlers = $cgi->upload("has_inage_files");
+    # my @manualsInput = $cgi->param("has_manual_files");
+    # my @manualHandlers = $cgi->upload("has_manual_files");
+
+    #-----------------Validations-------------#
+    if(!$serial || !$network){
+        my $response = '{"status": "--The fields marked with \' * \' are required."}';
+        return $response;
+    }
+    else
+    {
+        my $scmd = "SELECT * FROM computers WHERE serial_num = ?";
+        my $rows = $dbh->prepare($scmd);
+        $rows->execute($serial);
+
+        my $networkNameColumn = $dbh->quote_identifier('network_name_'.cookie('language'));
+        $scmd = "SELECT id FROM networks WHERE $networkNameColumn = ?";
+        my $networkrows = $dbh->prepare($scmd);
+        $networkrows->execute($network);
+        my $nref = $networkrows->fetchrow_hashref();
+        my $network_id = $nref->{'id'};
+
+        if($rows->rows)
+        {
+            my $response = '{"status": "--A computer with Serial Number: \'' . $serial . '\' already exists."}';
+            return $response;
+        }
+        elsif(!$networkrows->rows)
+        {
+            my $response = '{"status": "--A network with Name: \'' . $network . '\' does not exist."}';
+            return $response;
+        }
+        else
+        {
+            my $cmd = "INSERT INTO computers(serial_num,computer_name_en,computer_name_bg,network_id,manual_url,last_modified_by) VALUES(?,?,?,?,?,?) RETURNING id";    
+            my $sth = $dbh->prepare($cmd);
+            $sth->execute($serial,$name_en,$name_bg,$network_id,$manualURL,cookie('username')); 
+            my $pcref = $sth->fetchrow_hashref();
+            my $pc_id = $$pcref{id};
+
+            #single Image-------------------------------
+            if($imagesInput&&$imageHandlers)
+            {
+                my($filename, $path, $suffix) = fileparse($imagesInput, qr/\.[^.]*/);
+                my $newname = $serial . "_". $suffix;
+                open ( UPLOADFILE, ">". $upload_dir ."/images/" . $newname ) or die "$!";
+                binmode UPLOADFILE;
+                my $handler = $imageHandlers->handle;
+                while ( <$handler> )
+                {
+                    print UPLOADFILE;
+                }
+                close UPLOADFILE;
+
+                my $ficmd = "INSERT INTO computer_images(file_name,computer_id) VALUES (?,?)";
+                my $ith = $dbh->prepare($ficmd);
+                $ith->execute($newname,$pc_id);
+
+                my $uicmd = "UPDATE computers SET has_image_files = ? WHERE id = ?";
+                my $uith = $dbh->prepare($uicmd);
+                $uith->execute('t',$pc_id);
+            }
+            #---------------------------------------------
+
+            #single Manual File ----------------------------------
+            if($manualsInput&&$manualHandlers)
+            {
+                my($filename, $path, $suffix) = fileparse($manualsInput, qr/\.[^.]*/);
+                my $newname = $serial . "_".$suffix;
+
+                open ( UPLOADFILE, ">". $upload_dir . "/manuals/" . $newname ) or die "$!";
+                binmode UPLOADFILE;
+                my $handler = $manualHandlers->handle;
+                while ( <$handler> )
+                {
+                    print UPLOADFILE;
+                }
+                close UPLOADFILE;
+                my $fmcmd = "INSERT INTO computer_manuals(file_name,computer_id) VALUES (?,?)";
+                my $ith = $dbh->prepare($fmcmd);
+                $ith->execute($newname,$pc_id);
+
+                my $uicmd = "UPDATE computers SET has_manual_files = ? WHERE id = ?";
+                my $uith = $dbh->prepare($uicmd);
+                $uith->execute('t',$pc_id);
+            }
+
+            # ----------------------------------------------------
+
+
+            # multiple Images------------------------------
+            # for(my $i = 0; $i <= $#imagesInput; $i++)
+            # {
+            #     my($filename, $path, $suffix) = fileparse($imagesInput[$i], qr/\.[^.]*/);
+            #     my $newname = $serial . "_" . $i . $suffix;
+            #     open ( UPLOADFILE, ">". $upload_dir ."/images/" . $newname ) or die "$!";
+            #     binmode UPLOADFILE;
+            #     my $handler = $imageHandlers[$i]->handle;
+            #     while ( <$handler> )
+            #     {
+            #         print UPLOADFILE;
+            #     }
+            #     close UPLOADFILE;
+
+            #     my $ficmd = "INSERT INTO computer_images(file_name,computer_id) VALUES (?,?)";
+            #     my $ith = $dbh->prepare($ficmd);
+            #     $ith->execute($newname,$pc_id);
+
+            #     my $uicmd = "UPDATE computers SET has_image_files = ? WHERE id = ?";
+            #     my $uith = $dbh->prepare($uicmd);
+            #     $uith->execute('t',$pc_id);
+            # }   
+            # #-----------------------------------------------
+
+            # #multiple manuals--------------------------------
+            # for(my $i = 0; $i <= $#manualsInput; $i++)
+            # {
+            #     my($filename, $path, $suffix) = fileparse($manualsInput[$i], qr/\.[^.]*/);
+            #     my $newname = $serial . "_" . $i . $suffix;
+
+            #     open ( UPLOADFILE, ">". $upload_dir . "/manuals/" . $newname ) or die "$!";
+            #     binmode UPLOADFILE;
+            #     my $handler = $manualHandlers[$i]->handle;
+            #     while ( <$handler> )
+            #     {
+            #         print UPLOADFILE;
+            #     }
+            #     close UPLOADFILE;
+            #     my $fmcmd = "INSERT INTO computer_manuals(file_name,computer_id) VALUES (?,?)";
+            #     my $ith = $dbh->prepare($fmcmd);
+            #     $ith->execute($newname,$pc_id);
+
+            #     my $uicmd = "UPDATE computers SET has_manual_files = ? WHERE id = ?";
+            #     my $uith = $dbh->prepare($uicmd);
+            #     $uith->execute('t',$pc_id);
+            # }
+            # #--------------------------------------------------
+            my $rc = $dbh->commit;
+            my $response = '{"status": "Done!"}';
+            return $response;
+        }
+    }
+}
+
+sub errorOutput
+{
+    my $response = '{"status": "An error occured."}';
+    return $cgi->header(
+            -type=>'application/json',
+            -charset=>'utf-8'
+        ),
+        $response;
+}
+sub lengthError
+{
+    my $response = '{"status": "The maximum allowed total file size per request is 100 Kb"}';
+    return $session->header(
+            -type=>'application/json',
+            -charset=>'utf-8'
+        ),
+        $response;
+}

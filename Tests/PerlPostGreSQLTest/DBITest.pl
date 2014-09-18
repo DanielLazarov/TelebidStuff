@@ -1,0 +1,17 @@
+use DBI;
+
+my $dbh = DBI->connect("DBI:Pg:dbname=my_pg_db;host=localhost", "pg_user", "564564", {'RaiseError' => 1});
+
+my $rows = $dbh->do("INSERT INTO pg_equipment (type, color, location, install_date) VALUES ('swing', 'red', 'south', '2014-07-15')");
+print "$rows row(s) affected\n";
+
+my $dels = $dbh ->do("DELETE FROM pg_equipment WHERE equip_id > 3");
+print "$dels rows affected \n";
+
+my $sth = $dbh->prepare("SELECT type, color FROM pg_equipment");
+$sth->execute();
+
+while(my $ref = $sth->fetchrow_hashref()) {
+    print "the $ref->{'type'} is $ref->{'color'}\n";
+}
+$dbh->disconnect();

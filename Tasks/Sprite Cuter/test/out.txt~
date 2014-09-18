@@ -1,0 +1,14 @@
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/main/top_name.png")] public var class_asset_top_name:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/main/top_wild.png")] public var class_asset_top_wild:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/main/top_fg.png")] public var class_asset_top_fg:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/main/top_win.png")]      public var class_win_main_scatter_top:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/free/top_win_more.png")] public var class_win_free_scatter_top:Class;
+    // paytable
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/background_pay.png")] public var class_asset_paytab:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/background_help.png")] public var class_asset_paytab_help:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/help_scatter.png")] public var class_asset_paytab_scatter:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/help_15_fg.png")] public var class_asset_paytab_fg:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/help_wild_main.png")] public var class_asset_paytab_wild:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/help_wild_subs.png")] public var class_asset_paytab_subs:Class;
+    [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/help_kind.png")] public var class_asset_paytab_kind:Class;
+ [Embed(source="../../gamescontent/1024_COMMON/Navy_Girl/game/help/help_wild_sim.png")] public var class_asset_paytab_wild2:Class;

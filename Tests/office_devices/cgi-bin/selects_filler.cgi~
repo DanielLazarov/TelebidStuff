@@ -1,0 +1,136 @@
+#!/usr/bin/perl -w
+use CGI;
+use strict;
+use DBI;
+use warnings;
+use Encode;
+
+print "Content-type: application/json\n\n";
+
+my $conn = DBI->connect("DBI:Pg:dbname=office_devices; host=localhost", 'pg_user', '564564') || die "Could not connect to database";
+
+my $cgi = CGI->new;
+my $choice = $cgi->param("choice");
+
+if($choice eq "networks") {
+	my $scmd = "SELECT name FROM networks";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch networks\n";	
+	my $response = '{"networks":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $name = decode_utf8( $ref->{'name'} ); 
+		$response .= '{"name":' . "\"$name\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+}
+
+elsif($choice eq "computers-and-hwmodels") {
+	my $scmd = "SELECT host_name FROM computers";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch computers\n";	
+	my $response = '{"computers":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $name = decode_utf8( $ref->{'host_name'} ); 
+		$response .= '{"name":' . "\"$name\"}";
+		$comma = 1; 
+	}
+	$response .= "],";
+
+
+	$response .= '"models":[';
+	
+	$scmd = "SELECT model FROM models JOIN hardware_parts ON hardware_parts.id = models.id";
+	$rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch moedls\n";	
+	$comma = 0;
+	
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $model = decode_utf8( $ref->{'model'} ); 
+		$response .= '{"model":' . "\"$model\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+	open(FILE,"> tests.txt") || die "can't open the file";
+	print FILE $response;
+
+}
+
+elsif($choice eq "computers") {
+	my $scmd = "SELECT host_name FROM computers";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch computers\n";	
+	my $response = '{"computers":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $name = decode_utf8( $ref->{'host_name'} ); 
+		$response .= '{"name":' . "\"$name\"}";
+		$comma = 1; 
+	}
+	$response .= "]}";
+	print $response;	
+}
+
+elsif($choice eq "networks-and-networkmodels") {
+	my $scmd = "SELECT name FROM networks";
+	my $rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch networks\n";	
+	my $response = '{"networks":[';
+	my $comma = 0;
+
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $name = decode_utf8( $ref->{'name'} ); 
+		$response .= '{"name":' . "\"$name\"}";
+		$comma = 1; 
+	}
+	$response .= "],";
+
+
+	$response .= '"models":[';
+	
+	$scmd = "SELECT model FROM models JOIN network_devices ON network_devices.id = models.id";
+	$rows = $conn->prepare($scmd);
+	$rows->execute() || die "couldnt fetch moedls\n";	
+	$comma = 0;
+	
+	while(my $ref = $rows->fetchrow_hashref()) {
+		if($comma) {
+		 	$response .= ",";
+		}
+		my $model = decode_utf8( $ref->{'model'} ); 
+		$response .= '{"model":' . "\"$model\"}";
+		$comma = 1; 
+	}
+
+	$response .= "]}";
+	print $response;
+	open(FILE,"> tests.txt") || die "can't open the file";
+	print FILE $response;
+
+}
+	close FILE;
+

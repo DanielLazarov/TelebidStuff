@@ -1,0 +1,207 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+public class main {
+/*Random tests to enter
+5
+1 0 0 0 1
+1 1 0 0 1
+0 0 1 1 0
+1 1 1 0 0
+0 0 0 1 1
+
+5
+1 1 1 0 1
+1 1 1 0 0
+0 0 0 0 1
+1 1 0 0 1
+0 0 0 0 0
+ */
+	
+	//Console reader
+	static int[][] reader(int n){
+		Scanner in = new Scanner(System.in);
+
+		int[][]result = new int[n][n];
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				result[i][j]=in.nextInt();		
+			}			
+		}
+		
+		return result;			
+	}
+	
+	//Paths Counter
+	static int srcFreePaths(int[][] arr){
+		int freePathCounter=0;
+		boolean checkH;
+		boolean checkV;
+		
+		for (int i = 0; i < arr.length; i++) {
+			
+			checkH = true;
+			checkV = true;
+			
+			for (int j = 0; j < arr.length; j++) {
+				if(arr[i][j]!=0)
+					checkH=false;
+				if(arr[j][i]!=0)
+					checkV=false;	
+			}	
+			
+			if(checkV)
+				freePathCounter++;
+			
+			if(checkH)
+				freePathCounter++;		
+		}
+
+		return freePathCounter;
+	}
+	
+	//Type Counter
+	static int srcTypeCount(int[][] arr){
+		
+		int typePointer=0;
+		int FigureHeight;
+		int FigureWidth;
+		int curHeight;
+		int curWidth;
+		
+		for (int i = 0; i < arr.length; i++) {
+			for (int j = 0; j < arr.length; j++) {
+				
+				if(arr[i][j]==1){	
+					FigureHeight = 0;
+					FigureWidth = 0;
+					
+					for (int i2 = i; i2 < arr.length; i2++) {
+						curWidth = 0;
+						for (int j2 = j; j2 < arr.length; j2++) {
+							
+							
+							curHeight = 0;
+							System.out.println("zero");
+							for (int i3 = i2; i3 < arr.length; i3++) {
+								if(j2 == j)
+									FigureHeight++;
+								System.out.println("figure");
+								if(i2 == i)
+									System.out.println("current");
+									curHeight++;
+								if(i3 + 1 == arr.length){
+									break;
+								}
+								if(arr[i3+1][j]==0){
+									break;
+								}				
+							}
+							
+							if(i2 == i)
+								FigureWidth++;
+								curWidth++;
+							
+							if(FigureHeight!=curHeight){
+								System.out.println( FigureHeight + " " + curHeight);
+								//return 0;
+							}
+							if(j2 + 1 == arr.length){
+								arr[i2][j2] = 0;
+								break;
+							}
+							else if(arr[i2][j2+1]==0){
+								arr[i2][j2] = 0;
+								break;
+							}
+							else
+								arr[i2][j2] = 0;
+						}
+						
+						if(FigureWidth!=curWidth){
+							System.out.println("Incorrect data input");
+							return 0;
+						}
+						
+						if(i2 + 1 == arr.length){
+							break;
+						}
+						else if(arr[i2+1][j]==0){
+							break;
+						}
+						else 
+							arr[i2][j]=0;
+					}
+					
+					typePointer++;							
+				}									
+			}
+		}
+		
+		return typePointer;
+	}
+	
+	//File Reader
+	static int[][] readFromFile(String path) throws FileNotFoundException{
+		int size;
+		int[][] result = new int[0][0];
+		int i=0;
+		
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(path));
+			String line = null;
+			String[] parts;
+			while ((line = reader.readLine()) != null) {
+				if(i==0){
+					line = line.trim();
+					size = Integer.parseInt(line);
+					System.out.println(line);
+					result = new int[size][size];
+				}
+				else{	
+					System.out.println(line);
+					parts = line.split("\\s+");
+					for (int k = 0; k < parts.length; k++) {
+						result[i-1][k] = Integer.parseInt(parts[k]);
+					}		
+				}
+				
+				i++;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+			
+		return result;
+	}
+	
+	public static void main(String[] args) {
+		int arr[][];
+		/*CONSOLE
+		Scanner in = new Scanner(System.in);
+		
+				break;		
+		}
+		
+		int arr[][]= reader(n);
+		 */
+		
+		//File
+		long start = System.currentTimeMillis();
+		
+		try {
+			arr = readFromFile("/home/daniel/Desktop/Test.txt");
+			int pathCount = srcFreePaths(arr);
+			int typeCount = srcTypeCount(arr); 
+			System.out.println("total Path count: " + pathCount);
+			System.out.println("total Type count: " + typeCount);
+			System.out.println("Task Time in miliSecs: " + (System.currentTimeMillis() - start));
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+}

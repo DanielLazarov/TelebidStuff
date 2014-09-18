@@ -1,0 +1,27 @@
+import java.io.File;
+
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+checkStack();
+	}
+	
+	public static void checkStack(){
+		
+		StackTraceElement[] ste =  Thread.currentThread().getStackTrace();
+		System.out.println(ste);
+	}
+	
+	public static int fileTest(String path){
+		int byteValue = 0;
+		File myFile = new File(path);
+		System.out.println(myFile.length());
+		
+		return byteValue;
+	}
+
+}

@@ -1,0 +1,54 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
+
+public class BinFilegeneratorMain {
+
+	public static void main(String[] args) {
+		byteCounter("/home/daniel/Desktop/ bigAssFile");
+
+		
+	}
+	public static void fileGen(long size){
+		try {
+			new RandomAccessFile("/home/daniel/Desktop/ bigAssFile", "rw").setLength(size);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void byteCounter(String fileName){
+		try {
+            FileInputStream inputStream = 
+                new FileInputStream(fileName);
+            byte a[] = new byte[100000000];
+            long total = 0;
+            int nRead = 0;
+            while((nRead = inputStream.read(a))!= -1) {
+            	//System.out.println(nRead);
+                total += nRead;
+                System.out.println("reached " + total + "bytes");
+            }	
+
+            inputStream.close();		
+
+            System.out.println("Read " + total + " bytes");
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");				
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '" 
+                + fileName + "'");					
+        }
+	}
+
+}

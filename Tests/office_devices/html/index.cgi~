@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use CGI::Session;
+use CGI qw/:standard/;
+my $retrieve_cookie = cookie('CGISESSID');
+
+open (COOKIE,"> cookie.txt");
+print COOKIE $retrieve_cookie;
+close COOKIE;
+
+my $cgi = CGI->new;
+my $logged = 1;
+if($cgi->param('logout')){
+	if($retrieve_cookie){#Already Logged in.
+		my $session = CGI::Session->load($retrieve_cookie);
+		$session->delete();
+		$logged = 0;
+	}
+}
+
+if($retrieve_cookie&&$logged){#Already Logged in.
+	my $session = CGI::Session->load($retrieve_cookie);
+	my $string; 
+	print $session->header();
+	{
+  		local $/ = undef;
+  		open FILE, "../pages/index.html" or die "Couldn't open file: $!";
+ 		 $string = <FILE>;
+  		close FILE;
+	}
+	print $string;
+
+}
+
+else {#NOT Logged in.
+
+	my $string; 
+	print "Content-type: text/html\n\n";
+	{
+  		local $/ = undef;
+ 		open FILE, "../pages/login.html" or die "Couldn't open file: $!";
+ 		 $string = <FILE>;
+  		close FILE;
+	}
+	print $string;
+}
+
+
+
+
+ 
+ #print "Content-type: text/html\n\n";
+ #print "<html><head><title>A Simple Perl CGI</title></head><body><h1>A Simple Perl CGI</h1><p>Hello World</p></body>";
+
+
+
+
+

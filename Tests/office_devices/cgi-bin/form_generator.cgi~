@@ -1,0 +1,67 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use CGI;
+use CGI qw/:standard/;
+use DBI;
+use HTML::Template;
+
+my $retrieve_language = cookie('language');
+
+my $action = "../cgi-bin/insert_handler.cgi";
+my $enctype = "multipart/form-data";
+my $method = "post";
+
+my $formData = "";
+my $lang = $retrieve_language;
+
+my $cgi = CGI->new;
+my $form = $cgi->param("form");#parameters
+
+
+my $dbName = "office_devices";
+my $host = "localhost";
+my $user = "pg_user";
+my $pw = "564564";
+
+my $dbh = DBI->connect("DBI:Pg:dbname=$dbName; host=$host", $user, $pw) or die "Could not connect to database";
+
+my $cmd = "SELECT * FROM meta_data_inputs WHERE is_input = 't' AND table_name = ? ORDER BY ordering";
+my $sth = $dbh->prepare($cmd);
+$sth->execute($form);
+
+my $formTemplate = HTML::Template->new(filename => '../pages/templates/form.tmpl');
+
+while(my $row = $sth->fetchrow_hashref())
+{
+	if(substr($row->{'input_type'},0,6) ne "custom")
+    {
+	    my $inputTemplate = HTML::Template->new(filename => '../pages/templates/input.tmpl');
+      	$inputTemplate->param(NAME => $row->{'name'});
+      	$inputTemplate->param(LABEL => $row->{'label_'.$lang});
+      	$inputTemplate->param(TYPE => $row->{'input_type'});
+      	$inputTemplate->param(ID => $row->{'name'} . "-" . $row->{'input_type'});
+      	$inputTemplate->param(CLASS => $row->{'name'} . "-" . $row->{'input_type'});
+      	$formData .= $inputTemplate->output();
+    }
+    elsif($row->{'input_type'} eq "custom-dropdown-search")
+    {
+        my $inputTemplate = HTML::Template->new(filename => "../pages/templates/" . $row->{'input_type'} . ".tmpl");
+      	$inputTemplate->param(NAME => $row->{'name'});
+      	$inputTemplate->param(LABEL => $row->{'label_'.$lang});
+      	#$inputTemplate->param(TYPE => $row->{'input_type'});
+      	$inputTemplate->param(ID => $row->{'name'} . "-" . $row->{'input_type'});
+      	$inputTemplate->param(CLASS => $row->{'name'} . "-" . $row->{'input_type'});
+      	$formData .= $inputTemplate->output();
+    }
+}
+
+$formTemplate->param(ID => 'forms-'. $form . '-form');
+$formTemplate->param(CLASS => 'forms-'. $form . '-form');
+$formTemplate->param(METHOD => $method);
+$formTemplate->param(ACTION => $action);
+$formTemplate->param(ENCTYPE => $enctype);
+$formTemplate->param(FORMDATA => $formData);
+
+print "Content-type: text/html\n\n";
+print $formTemplate->output();

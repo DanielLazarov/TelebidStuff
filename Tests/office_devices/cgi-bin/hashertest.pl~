@@ -1,0 +1,25 @@
+use Crypt::PBKDF2;
+use DBI;
+
+my $dbUser = "pg_user";
+my $host = "localhost";
+my $db = "office_devices";
+my $pw = "564564";
+
+my $conn = DBI->connect("DBI:Pg:dbname=".$db."; host=" . $host, $dbUser, $pw) || die "Could not connect to database";
+
+my $pbkdf2 = Crypt::PBKDF2->new(
+    hash_class => 'HMACSHA2',
+    hash_args => {
+    	sha_size => 512,
+    },
+	iterations => 10000
+);
+ 	my $name = "daniel";
+    my $password = "564564";
+    my $hash = $pbkdf2->generate($password,$name);
+
+my $icmd = "INSERT INTO users(username,password) VALUES(?,?)";
+my $rows = $conn->prepare($icmd);
+$rows->execute($name, $hash);
+$conn->disconnect;

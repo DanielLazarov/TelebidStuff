@@ -1,0 +1,5 @@
+#!/usr/bin/perl -w
+use strict;
+use CGI;
+my $header = CGI->new()->header();
+print "Hello World";

@@ -1,0 +1,5 @@
+use warnings;
+use strict;
+
+#Escape whitespaces in file path and name 
+#$file=~ s/ /\\ /g;

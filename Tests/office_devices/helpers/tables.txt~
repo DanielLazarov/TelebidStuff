@@ -1,0 +1,151 @@
+CREATE TABLE types (
+id SERIAL PRIMARY KEY,
+type TEXT UNIQUE NOT NULL,
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+last_modified_by TEXT
+);
+
+CREATE TABLE models (
+id SERIAL PRIMARY KEY,
+model TEXT UNIQUE,
+type_id INTEGER REFERENCES types(id),
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+last_modified_by TEXT
+);
+
+CREATE TABLE networks(
+id SERIAL PRIMARY KEY,
+network_name_en text UNIQUE NOT NULL,
+network_name_bg text UNIQUE NOT NULL,
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+hits INTEGER DEFAULT 0,
+last_modified_by TEXT
+);
+
+CREATE TABLE network_devices (
+id SERIAL PRIMARY KEY,
+serial_num TEXT UNIQUE NOT NULL,
+warranty DATE DEFAULT NULL,
+network_id integer REFERENCES networks(id),
+model_id integer REFERENCES models(id),
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+last_modified_by TEXT,
+manual_url TEXT DEFAULT NULL,
+has_image_files BOOLEAN DEFAULT 'f',
+has_manual_files BOOLEAN DEFAULT 'f'
+);
+
+CREATE TABLE computers (
+id SERIAL PRIMARY KEY,
+serial_num TEXT UNIQUE NOT NULL,
+computer_name_en TEXT DEFAULT NULL,
+computer_name_bg TEXT DEFAULT NULL,
+network_id integer REFERENCES networks(id),
+manual_url TEXT DEFAULT NULL,
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+last_modified_by TEXT,
+has_image_files BOOLEAN DEFAULT 'f',
+has_manual_files BOOLEAN DEFAULT 'f',
+exists BOOLEAN DEFAULT 't'
+);
+
+
+CREATE TABLE hardware_parts (
+id SERIAL PRIMARY KEY,
+serial_num TEXT UNIQUE NOT NULL,
+warranty date DEFAULT NULL,
+computer_id integer REFERENCES computers(id),
+model_id integer REFERENCES models(id), 
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+last_modified_by TEXT,
+manual_url TEXT DEFAULT NULL,
+has_image_files BOOLEAN DEFAULT 'f',
+has_manual_files BOOLEAN DEFAULT 'f'
+);
+
+CREATE TABLE images (
+id SERIAL PRIMARY KEY,
+file_name TEXT NOT NULL,
+foreign_table TEXT NOT NULL,
+foreign_id INTEGER NOT NULL,
+CONSTRAINT computer_images_u_constraint UNIQUE (foreign_id, file_name),
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+last_modified_by TEXT
+);
+
+CREATE TABLE manuals (
+id SERIAL PRIMARY KEY,
+file_name TEXT NOT NULL,
+foreign_table TEXT NOT NULL,
+computer_id INTEGER NOT NULL,
+CONSTRAINT computer_manuals_u_constraint UNIQUE (foreign_id, file_name),
+date_inserted TIMESTAMP DEFAULT now(),
+date_updated TIMESTAMP DEFAULT now(),
+last_modified_by TEXT
+);
+
+CREATE TABLE meta_data_inputs (
+id SERIAL PRIMARY KEY,
+table_name TEXT NOT NULL,
+column_name TEXT NOT NULL,
+name TEXT NOT NULL,
+input_type TEXT NOT NULL DEFAULT '',
+required BOOLEAN NOT NULL default 'f',
+ordering INTEGER NOT NULL DEFAULT 0,
+label_en TEXT NOT NULL DEFAULT '',
+label_bg TEXT NOT NULL DEFAULT '', 
+default_value_en TEXT NULL DEFAULT '',
+default_value_bg TEXT NULL DEFAULT '',
+is_input BOOLEAN NOT NULL DEFAULT 'f',
+is_foreign BOOLEAN NOT NULL DEFAULT 'f',
+foreign_key_column TEXT NOT NULL DEFAULT '',
+foreign_value_column TEXT NOT NULL DEFAULT '',
+is_multilang BOOLEAN NOT NULL DEFAULT 'f'
+);
+
+
+
+
+DO
+$do$
+BEGIN
+FOR i IN 1..1000000 LOOP
+   INSERT INTO computers (serial_num, 
+computer_name_en, 
+computer_name_bg,
+network_id
+) 
+values (concat('PC',cast(i as varchar)),
+concat('Computer',cast(i as varchar)),
+concat('Компютър',cast(i as varchar)),
+(i%321233)+50
+ );
+END LOOP;
+END
+$do$;
+
+
+
+
+DO
+$do$
+BEGIN
+FOR i IN 1..1000000 LOOP
+   INSERT INTO networks ( 
+network_name_en, 
+network_name_bg
+) 
+values (
+concat('Network',cast(i as varchar)),
+concat('Мрежа',cast(i as varchar))
+);
+END LOOP;
+END
+$do$;

@@ -1,0 +1,41 @@
+import java.util.Scanner;
+public class Main {	
+
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in); 
+		
+		System.out.println("Enter a nuber to get Factorial");
+		int number = input.nextInt();
+		int result = 1;
+		
+		long startTime = System.currentTimeMillis();
+		for (int i = 1; i <= number; i++) {
+			result*=i;			
+		}
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		System.out.println("loop time: " + totalTime);
+		System.out.println(result);
+		
+		startTime = System.currentTimeMillis();
+		result = fact(number);
+		endTime = System.currentTimeMillis();
+		totalTime = endTime - startTime;
+		System.out.println("recursive time: " + totalTime);
+		System.out.println(result);
+		
+	}
+	
+	static int fact(int n)
+    {
+        int result;
+
+       if(n==1)
+         return 1;
+
+       result = fact(n-1) * n;
+       return result;
+    }
+	
+
+}

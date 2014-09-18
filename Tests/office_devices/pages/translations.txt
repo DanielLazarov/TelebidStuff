@@ -1,0 +1,12 @@
+LANGUAGE,en,bg
+ACTIVEBG,inactive,active
+ACTIVEEN,active,inactive
+MSG,Hello,Здравей
+LOGOUT,Log Out,Излез
+TITLE,Office Devices,Офис Устройства
+COMPUTERS,Computers,Компютри
+NETWORKS,Networks,Мрежи
+COMPUTER_PARTS,Computer parts,Компютърни части
+NETWORK_DEVICES,Network devices,Мрежови устройства
+MODELS,Models,Модели
+TYPES,Types,Типове

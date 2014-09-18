@@ -1,0 +1,26 @@
+#!/usr/bin/perl -w
+use CGI;
+use strict;
+use DBI;
+use warnings;
+
+print "Content-type: text/html\n\n";
+
+my $conn = DBI->connect("DBI:Pg:dbname=my_awesome_day; host=localhost", 'pg_user', '564564') || die "Could not connect to database";
+
+my $cgi = CGI->new;
+my $name = $cgi->param("story_name");
+my $uid = $cgi->param("u_id");
+my($day, $month, $year)=(localtime)[3,4,5];
+my $date = "$day-".($month+1)."-".($year+1900);
+
+my $scmd = "SELECT id FROM users WHERE fb_id = ?";
+my $rows = $conn->prepare($scmd);
+$rows->execute($uid) || die "couldnt fetch users\n"; 
+
+my $cmd = "INSERT INTO stories(name,user_id,date) VALUES(?,?,?)";
+my $sth = $conn->do($cmd,undef,$name,$uid,$date)|| die DBI->errstr;	
+
+my $response = "{\"name\" : \"$name\", \"status\" : \"OK\"}";
+
+print $response;

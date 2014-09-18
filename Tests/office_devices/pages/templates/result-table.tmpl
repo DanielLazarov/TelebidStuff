@@ -1,0 +1,15 @@
+﻿<div id="form-the-table">
+    <div id="<TMPL_VAR NAME=ID>-search-container" class="search-container <TMPL_VAR NAME=CLASS>-search-container pull-right">
+        <input id="<TMPL_VAR NAME=ID>-search-input" value="<TMPL_VAR NAME=VALUE>" style="margin-bottom: 0px;"class="<TMPL_VAR NAME=CLASS>-search-input pull-left" type="text">
+
+        <div id="<TMPL_VAR NAME=ID>-search-submits" class="table-search down-arrow pull-left <TMPL_VAR NAME=CLASS>-search-submits">
+            <img src="../images/search.png" form="<TMPL_VAR NAME=FORM>" id="<TMPL_VAR NAME=ID>-search" class="search" form="<TMPL_VAR NAME=FORM>">
+            <img src="../images/loading.gif" form="<TMPL_VAR NAME=FORM>" id="<TMPL_VAR NAME=ID>-loading" class="loading" form="<TMPL_VAR NAME=FORM>" style="display: none;">
+        </div>
+    </div>
+    <table id="<TMPL_VAR NAME=FORM>-result-table"class="<TMPL_VAR NAME=FORM>-table table result-table">
+    	<caption><TMPL_VAR NAME=TABLENAME></caption>
+    	<thead class="fixed"></thead>
+    	<tbody class="table-body"></tbody>
+    </table>
+</div>

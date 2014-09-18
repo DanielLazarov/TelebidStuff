@@ -1,0 +1,13 @@
+﻿<div id="<TMPL_VAR ESCAPE=HTML NAME="ID">" class="custom-dropdown-search-container <TMPL_VAR ESCAPE=HTML NAME="CLASS"> form-input-container">
+	<label for="<TMPL_VAR ESCAPE=HTML NAME="NAME">"><TMPL_VAR NAME=LABEL></label>
+	<input id="<TMPL_VAR ESCAPE=HTML NAME="ID">-input" value="<TMPL_VAR ESCAPE=HTML NAME="VALUE">" type="text" class="custom-dropdown-input float-left"  <TMPL_VAR ESCAPE=HTML NAME="REQUIRED"> >
+	<div id="<TMPL_VAR ESCAPE=HTML NAME="ID">-arrow-box" class="<TMPL_VAR ESCAPE=HTML NAME="CLASS">-down-arrow down-arrow custom-dropdown-down-arrow">
+		<img class="search" src="../images/search.png" id="<TMPL_VAR ESCAPE=HTML NAME="ID">-custom-dropdown-input-search-btn">
+		<img src="../images/loading.gif" id="<TMPL_VAR ESCAPE=HTML NAME="ID">-custom-dropdown-input-search-loading" class="loading" style="display: none;" />
+        <input type="button" class="additional-add" form="<TMPL_VAR ESCAPE=HTML NAME="GENERATE">" value="<TMPL_VAR ESCAPE=HTML NAME="ADD">">
+	</div>
+	<input type="hidden" cryteria="" name="<TMPL_VAR ESCAPE=HTML NAME="NAME">" value="<TMPL_VAR ESCAPE=HTML NAME="KEY">">
+	<ul class="drop-down-ul" id="<TMPL_VAR ESCAPE=HTML NAME="ID">-options" style="display: none;">
+        <li value="<TMPL_VAR ESCAPE=HTML NAME="KEY">"><TMPL_VAR ESCAPE=HTML NAME="DROPDOWNVALUE"></li>
+	</ul>
+</div>

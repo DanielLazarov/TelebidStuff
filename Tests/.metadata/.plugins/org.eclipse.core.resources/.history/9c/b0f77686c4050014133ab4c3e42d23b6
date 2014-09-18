@@ -1,0 +1,19 @@
+import java.util.Stack;
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	public static void checkStack(){
+		int someNum = 255;
+		String someString = "I am a shiny String";
+		Stack<String> st = new Stack<String>();
+		System.out.println(st.capacity());
+	}
+
+}
