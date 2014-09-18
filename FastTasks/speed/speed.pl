@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-
+use Time::HiRes qw/ time /;
 
 
 chomp(my $first = <>);
@@ -9,10 +9,11 @@ my @first = split(' ', $first);
 our $n = $first[0];
 our $m = $first[1];
 my $maxlength = 0;
+my @main;
 
 sub searchPath
 {
-    my ($start, $target, $arrayRef,$min,$max, $visitedRef, $st, $inner) = @_;
+    my ($start, $target, $arrayRef,$min,$max, $visitedRef) = @_;
     my @array = @{$arrayRef};
     my @vis = @{$visitedRef};
     $vis[$start] = 1;
@@ -39,7 +40,7 @@ sub searchPath
             {
                 if($arr[$var] >= $min && $arr[$var] <= $max)
                 {
-                    if(searchPath($i, $target, \@array, $min, $max, \@vis, $st, 1))
+                    if(searchPath($i, $target, \@array, $min, $max, \@vis))
                     {
                         return 1;
                     }
@@ -50,15 +51,14 @@ sub searchPath
     return 0;
 }
 
-my @main;
-
-
 for (my $i = 0; $i < $m; $i++) {
+    
     chomp(my $line = <>);
     my @line = split(' ', $line);
     my $t1 = $line[0];
     my $t2 = $line[1];
     my $si = $line[2];
+
     if($si > $maxlength)
     {
         $maxlength = $si;
@@ -78,19 +78,27 @@ for (my $i = 0; $i < $m; $i++) {
         $main[$t2-1][$t1-1] =  \@arr;
     }
 }
-$| = 1;
+
+my $startTime = time;
+
 my $optMin = $maxlength;
 my $optMax = 1;
 my $minDif = $maxlength;
-for (my $max = 1; $max <= $maxlength; $max++) {
-    for (my $min = 1; $min <= $max; $min++) {
+
+for (my $max = 1; $max <= $maxlength; $max++)
+{
+    for (my $min = 1; $min <= $max; $min++)
+    {
         my $valid = 1;
-        for (my $i = 0; $i < $n; $i++) {
-            for (my $j = $i; $j < $n; $j++) {
+
+        for (my $i = 0; $i < $n; $i++)
+        {
+            for (my $j = $i; $j < $n; $j++)
+            {
                 if($i!=$j)
                 {
                     my @visited;
-                    if(!searchPath($i,$j,\@main, $min, $max, \@visited, $i, 0))
+                    if(!searchPath($i,$j,\@main, $min, $max, \@visited))
                     {
                         $valid = 0;
                     }
@@ -115,3 +123,4 @@ for (my $max = 1; $max <= $maxlength; $max++) {
 }
 
 print "Min: " . $optMin . "  Max: ". $optMax , "\n";
+print "Time: " . (time - $startTime) . " sec. \n";
