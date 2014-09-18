@@ -1,4 +1,5 @@
-﻿<div id="<TMPL_VAR NAME=ID>-container" class="<TMPL_VAR NAME=TYPE>-container form-input-container">
-	<label for="<TMPL_VAR NAME=NAME>"><TMPL_VAR NAME=LABEL></label>
-	<input type="<TMPL_VAR NAME=TYPE>" id="<TMPL_VAR NAME=ID>" class="<TMPL_VAR NAME=CLASS>" value="<TMPL_VAR NAME=VALUE>" name="<TMPL_VAR NAME=NAME>" <TMPL_VAR ESCAPE=HTML NAME="REQUIRED"> <TMPL_VAR ESCAPE=HTML NAME="MULTIPLE"> >
+﻿<div id="<TMPL_VAR ESCAPE=HTML NAME=ID>-container" class="<TMPL_VAR ESCAPE=HTML NAME=TYPE>-container form-input-container">
+	<label for="<TMPL_VAR ESCAPE=HTML NAME=NAME>"><TMPL_VAR NAME=LABEL></label>
+	<input type="<TMPL_VAR ESCAPE=HTML NAME=TYPE>" id="<TMPL_VAR ESCAPE=HTML NAME=ID>" class="<TMPL_VAR ESCAPE=HTML NAME=CLASS>" value="<TMPL_VAR ESCAPE=HTML NAME=VALUE>" name="<TMPL_VAR ESCAPE=HTML NAME=NAME>" <TMPL_VAR ESCAPE=HTML NAME="REQUIRED"> <TMPL_VAR ESCAPE=HTML NAME="MULTIPLE"> >
 </div>
+<div id="<TMPL_VAR ESCAPE=HTML NAME=ID>-result-container" class="<TMPL_VAR ESCAPE=HTML NAME=TYPE>-result-container form-input-result-container"><TMPL_VAR NAME="RESULTCONTAINER"></div>

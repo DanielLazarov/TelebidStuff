@@ -1,7 +1,3 @@
-[Wed Sep 17 18:50:05 2014 from: 10.20.2.104]$VAR1 = {
-          'message' => 'ERROR:  duplicate key value violates unique constraint "computer_images_u_constraint"
-DETAIL:  Key (foreign_id, file_name)=(2000208, computers2000208_.png) already exists.',
-          'code' => '23505',
-          'number' => 7
-        };
+[Thu Sep 18 17:29:26 2014 from: 10.20.2.104]$VAR1 = 'Undefined subroutine &Office::DBInteraction::fileparse called at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/Office/DBInteraction.pm line 89.
+';
 

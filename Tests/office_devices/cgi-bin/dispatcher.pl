@@ -58,7 +58,7 @@ else
     }
     else
     {
-        $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>$defaultLanguage, -expires => '+1M');
+        $cookieLanguage = $cgi->cookie(-name=>'language', -value=>$defaultLanguage, -expires => '+1M');
         $header = $cgi->header(
                         -cookie=>$cookieLanguage,
                         -type=>'application/json',
@@ -67,7 +67,8 @@ else
 
         my %result = ('message' => '<script>window.location = "https://10.20.2.104:442"</script>');
 
-        print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
+        print $header;
+        print BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
     }
 }
 # close ERRORLOG;
@@ -92,12 +93,12 @@ sub BuildJSONrpc
 sub processDataLoggedIn 
 {
     $session = CGI::Session->load(cookie('CGISESSID')); 
-    $cookieSessionID = $session->cookie();
     $session->expire('+30m');
-    $cookieUsername = $session->cookie(-name=>'username', -value=>cookie('username'), -expires => '+30m');
-    $cookieLanguage = $session->cookie(-name=>'language', -value=>cookie('language'), -expires => '+1M');
+    $cookieSessionID = CGI::Cookie->new(-name=>'CGISESSID', -value=>$session->id, -expires => '+30m');
+    $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>cookie('username'), -expires => '+30m');
+    $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>cookie('language'), -expires => '+1M');
 
-    $header = $session->header(
+    $header = header(
                     -cookie=>[$cookieSessionID,$cookieUsername,$cookieLanguage],
                     -type=>'application/json',
                     -charset=>'utf-8'
@@ -128,9 +129,9 @@ sub processDataLoggedIn
     }
     catch
     {
-        #$$errorHash{'code'}    -> Postgress error code!!!
-        #$$errorHash{'code'}    -> Some Number
-        #$$errorHash{'code'}    -> Official Error Message
+        #$$_{'code'}    -> Postgress error code!!!
+        #$$_{'code'}    -> Some Number
+        #$$_{'code'}    -> Official Error Message
         open FILE, "> /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/error.log";
         print FILE "[" . localtime . " from: " . $client . "]" , Dumper($_) , "\n";
         close FILE;
@@ -176,18 +177,18 @@ sub processLogIn{
         {
             $session = CGI::Session->new(); 
             $session->expire('+30m');
-            $cookieSessionID = $session->cookie();
-            $cookieUsername = $session->cookie(-name=>'username', -value=>$$requestData{'params'}{'username'}, -expires => '+30m');
+            $cookieSessionID = CGI::Cookie->new(-name=>'CGISESSID', -value=>$session->id, -expires => '+30m');
+            $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>$$requestData{'params'}{'username'}, -expires => '+30m');
             if(cookie('language'))
             {
-                $cookieLanguage = $session->cookie(-name=>'language', -value=>cookie('language'), -expires => '+1M');
+                $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>cookie('language'), -expires => '+1M');
             }
             else
             {
-                $cookieLanguage = $session->cookie(-name=>'language', -value=>$defaultLanguage, -expires => '+1M');  
+                $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>$defaultLanguage, -expires => '+1M');  
             }
             
-            $header = $session->header(
+            $header = header(
                     -cookie=>[$cookieSessionID,$cookieUsername,$cookieLanguage],
                     -type=>'application/json',
                     -charset=>'utf-8'
@@ -197,8 +198,7 @@ sub processLogIn{
         }
         else
         {
-            $session = CGI::Session->new();
-            $header = $session->header(
+            $header = header(
                     -type=>'application/json',
                     -charset=>'utf-8'
                 );

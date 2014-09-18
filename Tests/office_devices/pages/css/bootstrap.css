@@ -1,4 +1,11 @@
 /* Custom dropdown menu*/
+#has_image_files-file-result-container > a > img{
+  height: 30px;
+  max-width: 200px;
+
+}
+
+
 .search-container{
   width: 220px;
 }

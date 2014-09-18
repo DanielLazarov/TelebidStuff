@@ -7,11 +7,9 @@ use warnings;
 use Apache::DBI;
 use DBI;
 use Encode;
-use File::Basename;
 use Try::Tiny;
 use Data::Dumper;
-use CGI;
-
+use File::Basename;
 use CGI qw/:standard/;
 
 sub insertOrUpdateRecord($$)
@@ -90,7 +88,7 @@ sub uploadFile($$$$)
     for(my $i = 0; $i <= $#handlers; $i++)
     {
         my($filename, $path, $suffix) = fileparse($handlers[$i], qr/\.[^.]*/);
-        my $newname = $cgi->param('choice'). $id . "_" . $suffix;
+        my $newname = $cgi->param('choice'). $id . $suffix;
 
         my $cmd = "INSERT INTO  " .  $dbh->quote_identifier($choice) . "(file_name,foreign_table,foreign_id,last_modified_by) VALUES (?,?,?,?) RETURNING id";
         my $sth = $dbh->prepare($cmd);
@@ -98,9 +96,10 @@ sub uploadFile($$$$)
         my $row = $sth->fetchrow_hashref();
         my $returnedID = $$row{id};
 
-        $newname = $returnedID . $newname;
+        $newname = $upload_dir . "/" . $choice . "/" . $returnedID . $newname;
 
-        open ( UPLOADFILE, ">". $upload_dir . "/" . $choice . "/" . $newname ) or die "$!";
+
+        open ( UPLOADFILE, "> " . $newname ) or die "$!";
         binmode UPLOADFILE;
         my $handler = $handlers[$i]->handle;
         while ( <$handler> )

@@ -15,9 +15,12 @@
         if (timeoutReference){
             clearTimeout(timeoutReference);
         } 
-        timeoutReference = setTimeout(function(){customDDSearch(search,reqGen);}, 300);
+        timeoutReference = setTimeout(function(){customDDSearch(search,reqGen);}, 500);
                 
 
+    });
+    $(document).on('click', '#test-image-btn', function(){
+        $('#has_image_files-file-result-container').append('<a href="../uploads/computers/images/1.jpg"><img src="../uploads/computers/images/1.jpg"></a>'); 
     });
 
     $(document).on('click','.drop-down-ul > li', function(){
@@ -32,6 +35,7 @@
 //---------Language SWITCH ------------------------------------------------
 
     $('.language-form').on('click', 'img', function(){
+
         $(this).siblings('input.input-current-language').val($(this).attr('language'));
 
         $(this).closest('form').submit();
