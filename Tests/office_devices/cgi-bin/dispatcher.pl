@@ -65,7 +65,7 @@ else
                         -charset=>'utf-8'
                     );
 
-        my %result = ('message' => '<script>window.location = "https://10.20.2.104:442"</script>');
+        my %result = ('message' => '<script>location.reload()</script>');
 
         print $header;
         print BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
@@ -96,6 +96,7 @@ sub processDataLoggedIn
     $session->expire('+30m');
     $cookieSessionID = CGI::Cookie->new(-name=>'CGISESSID', -value=>$session->id, -expires => '+30m');
     $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>cookie('username'), -expires => '+30m');
+
     $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>cookie('language'), -expires => '+1M');
 
     $header = header(
@@ -172,13 +173,21 @@ sub processLogIn{
                                    HandleError => \&dieOnDBIError,     
                                }
                             );
+        my $auth = Office::Authentication::logIn($dbh,$$requestData{'params'});
 
-        if(Office::Authentication::logIn($dbh,$$requestData{'params'}))
+        if($auth == 1)
         {
             $session = CGI::Session->new(); 
             $session->expire('+30m');
             $cookieSessionID = CGI::Cookie->new(-name=>'CGISESSID', -value=>$session->id, -expires => '+30m');
-            $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>$$requestData{'params'}{'username'}, -expires => '+30m');
+            if($$requestData{'params'}{'first_name'})
+            {
+                $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>$$requestData{'params'}{'first_name'}, -expires => '+30m');
+            }
+            else
+            {
+                $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>$$requestData{'params'}{'username'}, -expires => '+30m');
+            }
             if(cookie('language'))
             {
                 $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>cookie('language'), -expires => '+1M');
@@ -193,7 +202,7 @@ sub processLogIn{
                     -type=>'application/json',
                     -charset=>'utf-8'
                 );
-            my %result = ('message' => '<script>window.location = "https://10.20.2.104:442"</script>');
+            my %result = ('message' => '<script>location.reload()</script>');
             print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
         }
         else
@@ -202,8 +211,23 @@ sub processLogIn{
                     -type=>'application/json',
                     -charset=>'utf-8'
                 );
-
-            my %result = ('message' => '*Incorrect Username or Password');
+            my %result;
+            if($auth == 0)
+            {
+                %result = ('message' => '*Incorrect Username or Password');
+            }
+            elsif($auth == 2)
+            {
+                %result = ('message' => '*Your account will be activated soon.');
+            }
+            elsif($auth == 3)
+            {
+                %result = ('message' => '*Your account has been created! You will be gained access soon.');
+            }
+            else
+            {
+                %result = ('message' => '*Something went wrong with the authentication.');
+            }
             print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
         }
         $dbh->commit;
@@ -212,14 +236,17 @@ sub processLogIn{
     catch
     {
         open FILE, ">> /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/loginError.log";
-        print FILE "[" . localtime . " from: " . $client . "]" , $_  ,"\n";
+        print FILE "[" . localtime . " from: " . $client . "]" , Dumper($_)  ,"\n";
         close FILE;
         if($dbh)
         {
             $dbh->rollback;
             $dbh->disconnect;
         }
-
+            $header = header(
+                    -type=>'application/json',
+                    -charset=>'utf-8'
+                );
         # print ERRORLOG "[" . localtime . "]", $_, "\n";
         my %result = (
             'status'    => 'sys_error',

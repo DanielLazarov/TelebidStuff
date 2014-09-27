@@ -1,0 +1,55 @@
+<script>
+    (function() {
+        var head = document.getElementsByTagName("head")[0];
+        
+        if(!window.jQuery)
+        {
+            var jq = document.createElement("script");
+            jq.type = "text/javascript";
+            jq.src = "/tb2048game/js/jquery-1.11.1.min.js";
+            head.appendChild(jq);
+        }
+
+        var js = document.createElement("script");
+        js.type = "text/javascript";
+        js.src = "/tb2048game/js/jquery.easyModal.js";
+        head.appendChild(js);
+    }());
+
+    $(function() {
+    $(\'#game-2048-modal\').easyModal({    top: 100,
+    overlayOpacity: 0.1});
+});
+$(document).on(\'click\', \'' . $args['buttonId'] . '\', function(){
+    $(\'#game-2048-modal\).trigger(\'openModal\');
+    
+});
+    function Tile(position, value) {
+        this.x                = position.x;
+        this.y                = position.y;
+        this.value            = value || 2;
+        this.image = \'<img src="' . $pluginUrl . '/tb2048game/images/resized/\' + this.value + \'.png">\'
+
+        this.previousPosition = null;
+        this.mergedFrom       = null; // Tracks tiles that merged together
+    }
+
+    Tile.prototype.savePosition = function () {
+        this.previousPosition = { x: this.x, y: this.y };
+    };
+
+    Tile.prototype.updatePosition = function (position) {
+        this.x = position.x;
+        this.y = position.y;
+    };
+
+    Tile.prototype.serialize = function () {
+        return {
+            position: {
+                x: this.x,
+                y: this.y
+            },
+                value: this.value
+        };
+    };
+</script>

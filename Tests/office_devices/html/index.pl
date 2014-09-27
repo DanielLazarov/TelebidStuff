@@ -7,14 +7,33 @@ use CGI::Session;
 use CGI qw/:standard/;
 use HTML::Template;
 use Try::Tiny;
+use Data::Dumper;
+use Geo::IP;
 
 our %HoF = (
     'notloggedin' =>  \&notLoggedInOutput,
     'loggedin'    =>  \&loggedInOutput,
     'error'       =>  \&errorOutput,
 );
+our %HoL =(
+    'US'    => 'en',  
+);
 
 our $cgi = CGI->new;
+if(!cookie('language'))
+{
+    my $gi = Geo::IP->open("/usr/local/share/GeoIP/GeoLiteCity.dat", GEOIP_STANDARD);
+    my $record = $gi->record_by_addr(remote_addr());
+    if($record)
+    {
+        my $cookie1 = CGI::Cookie->new(
+            -name       => 'language',
+            -value      => '',
+            -expires    =>  '+1M',
+        );
+    }
+}
+
 my $logged = 1;
 
 try{

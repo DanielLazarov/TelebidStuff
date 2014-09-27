@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>2048</title>
+
+  <link href="style/main.css" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="favicon.ico">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+  <script src="js/bind_polyfill.js"></script>
+  <script src="js/classlist_polyfill.js"></script>
+  <script src="js/animframe_polyfill.js"></script>
+  <script src="js/keyboard_input_manager.js"></script>
+  <script src="js/html_actuator.js"></script>
+  <script src="js/grid.js"></script>
+  <script src="js/tile.js"></script>
+  <script src="js/local_storage_manager.js"></script>
+  <script src="js/game_manager.js"></script>
+  <script src="js/application.js"></script>
+  <script src="js/jquery-1.11.1.min.js"></script>
+  <script src="js/jquery.easyModal.js"></script>
+</head>
+<body>
+<script>
+    (function() {
+        var head = document.getElementsByTagName("head")[0];
+        
+        if(!window.jQuery)
+        {
+            var jq = document.createElement("script");
+            jq.type = "text/javascript";
+            jq.src = ' . $pluginUrl . '"/tb2048game/js/jquery-1.11.1.min.js";
+            head.appendChild(jq);
+        }
+
+        var js = document.createElement("script");
+        js.type = "text/javascript";
+        js.src = ' . $pluginUrl . '"/tb2048game/js/jquery.easyModal.js";
+        head.appendChild(js);
+    }());
+
+    $(function() {
+    $('#game-2048-modal').easyModal({    top: 100,
+    overlayOpacity: 0.1});
+});
+$(document).on('click',  . '#clicktest' , function(){
+    $(\'#game-2048-modal\).trigger(\'openModal\');
+    
+});
+    function Tile(position, value) {
+        this.x                = position.x;
+        this.y                = position.y;
+        this.value            = value || 2;
+        this.image = \'<img src="' . $pluginUrl . '/tb2048game/images/resized/\' + this.value + \'.png">\'
+
+        this.previousPosition = null;
+        this.mergedFrom       = null; // Tracks tiles that merged together
+    }
+
+    Tile.prototype.savePosition = function () {
+        this.previousPosition = { x: this.x, y: this.y };
+    };
+
+    Tile.prototype.updatePosition = function (position) {
+        this.x = position.x;
+        this.y = position.y;
+    };
+
+    Tile.prototype.serialize = function () {
+        return {
+            position: {
+                x: this.x,
+                y: this.y
+            },
+                value: this.value
+        };
+    };
+</script>
+<div class="container-2048" id="game-2048-modal">
+    <div class="heading">
+      <div class="scores-container">
+        <div class="score-container">0</div>
+        <div class="best-container">0</div>
+      </div>
+    </div>
+    <br />
+    <div class="above-game">
+      <p class="game-intro">Открий<strong> Отворения Код!</strong></p>
+      <a class="restart-button">Нова Игра</a>
+    </div>
+
+    <div class="game-container">
+      <div class="game-message">
+        <p></p>
+        <div class="lower">
+            <a class="keep-playing-button">Продължи</a>
+          <a class="retry-button">Опитай Пак</a>
+        </div>
+      </div>
+
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+      </div>
+
+      <div class="tile-container">
+
+      </div>
+    </div>
+<input type="button" value="click" id="testclickmodal">
+<script>
+$(function() {
+    $('#modal1').easyModal({	top: 100,
+	overlayOpacity: 0.1});
+});
+$(document).on('click', '#testclickmodal', function(){
+	$('#modal1').trigger('openModal');
+	
+});
+</script>
+</body>
+</html>

@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-		<meta content="utf-8" http-equiv="encoding">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<script type="text/javascript" src="../scripts/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="../scripts/requestGen.js"></script>
+        <script type="text/javascript" src="../scripts/login/login.js"></script>
+	<script type="text/javascript" src="../scripts/fb/fb.js"></script>
 		<title>LogIn</title>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
 	</head>
 	<body>
-		<form id="login-form" action="cgi-bin/login.cgi" method="post">
+	<style>
+	div.fb-login-button{
+		margin-left: 60px;
+		margin-top: 20px;
+	</style>
+    <script>
+    </script>
+
+		<form class="log-in-form" id="login-form">
 			<label for="username" id="username-label">Username:</label>
-			<input type="text" name="username"></input>
+			<input id="username-input" type="text" name="username">
 			<label for="password" id="password-label">Password:</label>
-			<input type="password" name="password"></input>
-			<br />
-			<input type="submit" value="Log in"></input>
+			<input id="password-input" type="password" name="password">
+			<div id="status"></div>
+			<input type="submit" id="login-btn" class="btn" value="Log in">
+<div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="false"></div>
+			<div id="status"><p></p></div>
 		</form>
+<div
+  class="fb-like"
+  data-share="true"
+  data-width="450"
+  data-show-faces="true">
+</div>
 	</body>
 </html>

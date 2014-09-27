@@ -65,7 +65,6 @@
             if(!processData){
                  data = params;
                  data.append('data_type', 'multipart/formdata');
-                 console.log(JSON.stringify(json_rpc));
                  data.append('json_rpc', JSON.stringify(json_rpc))
              }
              //Normal case.
@@ -74,7 +73,6 @@
                 data = {};
                 data.json_rpc = JSON.stringify(json_rpc);
              }
-             console.log(data);
             return data;
         }
     }

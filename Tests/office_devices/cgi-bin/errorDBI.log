@@ -98,3 +98,5 @@ DETAIL:  Key (foreign_id, file_name)=(2000206, computers2000206_.png) already ex
 DETAIL:  Key (foreign_id, file_name)=(2000207, computers2000207_.png) already exists.
 [Wed Sep 17 18:50:05 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computer_images_u_constraint"
 DETAIL:  Key (foreign_id, file_name)=(2000208, computers2000208_.png) already exists.
+[Tue Sep 23 13:02:25 2014 from: 10.20.2.104]ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(English PC SERIAL) already exists.

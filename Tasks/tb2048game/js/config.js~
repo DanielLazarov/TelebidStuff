@@ -1,0 +1,18 @@
+// We're only talking about creating one module here but this is
+// the config setup for creating multiple modules. This is
+// what's being discussed because it's common practice to use
+// multiple modules in a site/app build.  The process for
+// configuring a single module is discussed over at:
+// http://requirejs.org/docs/api.html#define.
+
+requirejs.config({
+
+  baseUrl: "/",
+
+  deps: ["easyModal"],
+
+  paths: {
+    jquery: "jquery-1.11.1.min"
+
+  }
+});

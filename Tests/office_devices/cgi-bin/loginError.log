@@ -16,3 +16,32 @@
 
 [Tue Sep 16 13:36:57 2014 from: 10.20.2.104]Can't locate object method "new" via package "CGI::Header" (perhaps you forgot to load "CGI::Header"?) at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/dispatcher.pl line 200.
 
+[Tue Sep 23 18:26:39 2014 from: 127.0.0.1]HASH(0x7f425c3f2890)
+[Tue Sep 23 18:26:45 2014 from: 127.0.0.1]HASH(0x7f425c393c00)
+[Tue Sep 23 18:28:51 2014 from: 127.0.0.1]HASH(0x7f65b1aa3018)
+[Tue Sep 23 18:31:16 2014 from: 127.0.0.1]$VAR1 = {
+          'code' => '',
+          'message' => 'execute called with an unbound placeholder',
+          'number' => 7
+        };
+
+[Tue Sep 23 18:33:11 2014 from: 127.0.0.1]$VAR1 = {
+          'code' => '23502',
+          'message' => 'ERROR:  null value in column "username" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, 904703529558826, Lazarov, Daniel).',
+          'number' => 7
+        };
+
+[Tue Sep 23 18:34:13 2014 from: 127.0.0.1]$VAR1 = {
+          'message' => 'called with 5 bind variables when 3 are needed',
+          'number' => '-1',
+          'code' => ''
+        };
+
+[Wed Sep 24 09:57:46 2014 from: 127.0.0.1]$VAR1 = {
+          'number' => 7,
+          'code' => '23505',
+          'message' => 'ERROR:  duplicate key value violates unique constraint "users_username_key"
+DETAIL:  Key (username)=() already exists.'
+        };
+

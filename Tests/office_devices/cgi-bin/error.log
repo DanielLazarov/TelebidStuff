@@ -1,3 +1,7 @@
-[Thu Sep 18 17:29:26 2014 from: 10.20.2.104]$VAR1 = 'Undefined subroutine &Office::DBInteraction::fileparse called at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/Office/DBInteraction.pm line 89.
-';
+[Tue Sep 23 13:02:25 2014 from: 10.20.2.104]$VAR1 = {
+          'code' => '23505',
+          'number' => 7,
+          'message' => 'ERROR:  duplicate key value violates unique constraint "computers_serial_num_key"
+DETAIL:  Key (serial_num)=(English PC SERIAL) already exists.'
+        };
 

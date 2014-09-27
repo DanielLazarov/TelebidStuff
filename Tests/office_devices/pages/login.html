@@ -5,17 +5,21 @@
 		<script type="text/javascript" src="../scripts/jquery-1.11.1.min.js"></script>
         <script type="text/javascript" src="../scripts/requestGen.js"></script>
         <script type="text/javascript" src="../scripts/login/login.js"></script>
+	<script type="text/javascript" src="../scripts/fb/fb.js"></script>
 		<title>LogIn</title>
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
 	</head>
 	<body>
 		<form class="log-in-form" id="login-form">
 			<label for="username" id="username-label">Username:</label>
-			<input id="username-input" type="text" name="username">
+			<input id="username-input" type="text" name="username" required>
 			<label for="password" id="password-label">Password:</label>
-			<input id="password-input" type="password" name="password">
+			<input id="password-input" type="password" name="password" required>
+			<label for="email" id="email-label">Email:</label>
+			<input id="email-input" type="email" name="email">
 			<div id="status"></div>
-			<input type="submit" id="login-btn" class="btn" value="Log in">
+			<input type="submit" id="login-btn" class="btn pull-left" value="Log in">
+                    <div id="fb-root"><div class="fb-login-button" onlogin="Facebook_login()" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="false"></div></div>
 			<div id="status"><p></p></div>
 		</form>
 	</body>

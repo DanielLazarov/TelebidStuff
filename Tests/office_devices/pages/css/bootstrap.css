@@ -125,19 +125,22 @@ input[type="file"]{
   padding: 0% 2% 2% 2%;
   background-color: #3F83D1;
 }
+
 .log-in-form input{
+    height: 30px;
     width:90%;
     margin-left: 5%;
 }
 
-.log-in-form input[type="text"],
-.log-in-form input[type="password"]{
-    width:90%;
-    margin-left: 5%;
-    height: 40px;
-}
 .log-in-form >.btn{
   margin-top: 20px;
+  height: 25px;
+  padding-top: 2px;
+  width: 50%;
+}
+.log-in-form > #fb-root > .fb-login-button{
+    margin-top: 20px;
+    margin-left: 5px;
 }
 
 .log-in-form label,

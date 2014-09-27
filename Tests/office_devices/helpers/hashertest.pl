@@ -15,11 +15,12 @@ my $pbkdf2 = Crypt::PBKDF2->new(
     },
 	iterations => 10000
 );
- 	my $name = "gosho";
+ 	my $name = "daniel";
     my $password = "parola";
+    my $email = "daniel.r.lazarov@gmail.com";
     my $hash = $pbkdf2->generate($password,$name);
 
-my $icmd = "INSERT INTO users(username,password) VALUES(?,?)";
+my $icmd = "INSERT INTO users(username,password,email) VALUES(?,?,?)";
 my $rows = $conn->prepare($icmd);
-$rows->execute($name, $hash);
+$rows->execute($name, $hash, $email);
 $conn->disconnect;
