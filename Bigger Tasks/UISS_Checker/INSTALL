@@ -1,0 +1,2 @@
+sudo apt-get install libwww-mechanize-perl
+sudo apt-get install sendmail
