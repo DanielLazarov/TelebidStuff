@@ -141,6 +141,6 @@ sub TRACE($;$)
 	{
 		$value = "";
 	}
-	print STDERR "[" . localtime . "] " . $string . ": " . $value ? $value : '' . "\n";
+	print STDERR "[" . localtime . "] " . $string . ": " . $value . "\n";
 
 }
