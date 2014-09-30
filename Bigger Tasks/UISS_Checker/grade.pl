@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use LWP::Protocol::socks;
 use WWW::Mechanize;
 use utf8;
 
@@ -15,7 +16,7 @@ else
       print  "Usage: perl grade.pl [--] [arguments]\n 
         -p [file_name]    uses a specified profile file from the profiles directory as an argument\n 
         -i [args]         takes as arguments [egn faculty_num email time_interval(in seconds)], if not specified the interval will be 3600\n"; 
-	}
+    }
     elsif($ARGV[0] eq "-p")
     {
         if(!$ARGV[1])
@@ -40,10 +41,10 @@ else
 
 sub terminalFileInput
 {
-	open (FH, "< profiles/$ARGV[1]") or die $!;
-	my @lines = <FH>;
-	close FH or die $!; 
-	checkGrade($lines[0]=~/<(.*)>/, $lines[1]=~/<(.*)>/, $lines[2]=~/<(.*)>/, $lines[3]=~/<(.*)>/);
+    open (FH, "< profiles/$ARGV[1]") or die $!;
+    my @lines = <FH>;
+    close FH or die $!; 
+    checkGrade($lines[0]=~/<(.*)>/, $lines[1]=~/<(.*)>/, $lines[2]=~/<(.*)>/, $lines[3]=~/<(.*)>/);
 }
 
 sub terminalArgumentsInput
@@ -60,87 +61,89 @@ sub terminalArgumentsInput
 
 sub checkGrade 
 {
-  	my ($egn, $fn, $mailTo, $checkInterval) = @_;
-	my $url = "http://student.tu-sofia.bg/marks.php";
-	my $fileName = 'grades.txt';
-	my $from = "webmaster\@daniel-pc.com";
-	my $subject = 'Brace yourself, grades are comming!';
-	
-	my $valid = 1;
-	while ($valid) 
-	{
-		my $result = eval {
-			my $mech = WWW::Mechanize->new();
+    my ($egn, $fn, $mailTo, $checkInterval) = @_;
+    my $url = "http://student.tu-sofia.bg/marks.php";
+    my $fileName = "grades/" . $fn;
+    my $from = "webmaster\@daniel-pc.com";
+    my $subject = 'Brace yourself, grades are comming!';
+    
+    my $valid = 1;
+    while ($valid) 
+    {
+        eval {
+            my $mech = WWW::Mechanize->new();
+            $mech->proxy(['http', 'ftp'], 'socks://localhost:9050');
+            $mech->agent("Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
+            #$mech->agent_alias( 'Windows IE 6' );
+            $mech->get($url);
+            $mech->form_name("studlogin");
+            $mech->field('egn' => $egn);
+            $mech->field('fn' => $fn);
+            $mech->submit();
 
-			$mech->get($url);
-			$mech->form_name("studlogin");
-			$mech->field('egn' => $egn);
-			$mech->field('fn' => $fn);
-			$mech->submit();
+            $mech->get($url);   
+            my $body = $mech->content;
 
-			$mech->get($url);	
-			my $body = $mech->content;
+            if($body!~/(Оценки)/)
+            {
+                TRACE("Incorrect login information\n");
+                $valid = 0;
+            }
+            else
+            {
+                if (-e $fileName) 
+                {   
+                    local $/;
+                    open(FILE, $fileName) or die $!;  
+                    my $document = <FILE>; 
+                    close (FILE);
+                    chomp $body;
+                    chomp $document;   
+                    utf8::encode( $body );
+                    if($document ne $body)
+                    {
+                        open(MAIL, "|/usr/sbin/sendmail -t");
+                        print MAIL "From: $from\n";
+                        print MAIL "To: $mailTo\n";
+                        print MAIL "Subject: $subject\n";
+                        print MAIL "Mime-Version: 1.0\n";
+                        print MAIL "Content-Type: text/html\n\n";
+                        print MAIL $body;
+                        close(MAIL);
 
-			if($body!~/(Оценки)/)
-			{
-				TRACE("Incorrect login information");
-				$valid = 0;
-			}
-			else
-			{
-				if (-e $fileName) 
-				{	
-					local $/;
-					open(FILE, $fileName) or die $!;  
-					my $document = <FILE>; 
-					close (FILE);
-					chomp $body;
-					chomp $document;	
+                        TRACE("Email Sent To $mailTo");
 
-					utf8::encode( $body );
-					if($document ne $body)
-					{
-						open(MAIL, "|/usr/sbin/sendmail -t");
-						print MAIL "From: $from\n";
-						print MAIL "To: $mailTo\n";
-						print MAIL "Subject: $subject\n";
-						print MAIL "Mime-Version: 1.0\n";
-						print MAIL "Content-Type: text/html\n\n";
-						print MAIL $body;
-						close(MAIL);
-
-						TRACE("Email Sent To $mailTo");
-
-						open FILE, "> $fileName" or die $!;
-						print FILE $body;
-						close FILE;
-					}			
-				} 
-				else 
-				{
-					$mech->get( $url, ':content_file' => $fileName);				
-				}
-			}
-		};
-		if(!$result)
-		{
-			TRACE($@);
-		}
-		if($valid)
-		{
-			sleep $checkInterval;
-		}	
-	}
+                        open FILE, "> $fileName" or die $!;
+                        print FILE $body;
+                        close FILE;
+                    }           
+                } 
+                else 
+                {
+                    $mech->get( $url, ':content_file' => $fileName);                
+                }
+            }
+        };
+        if($@)
+        {
+            TRACE($@);
+        }
+        if($valid)
+        {
+            sleep $checkInterval;
+        }   
+    }
 }
 
 sub TRACE($;$)
 {
-
-	my($string, $value) = @_;
-	if(!defined $value)
-	{
-		$value = "";
-	}
-	print STDERR "[" . localtime . "] " . $string . ": " . $value . "\n";
-
+    my($string, $value) = @_;
+    if(defined $value)
+    {
+        print STDERR "[" . localtime . "] " . $string . ": " . $value . "\n";
+    }
+    else
+    {
+        print STDERR "[" . localtime . "] " . $string . "\n";
+    }   
 }
