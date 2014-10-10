@@ -46,7 +46,6 @@ sub answer($;$)
             push @keyArr, $key;
         }
         @keyArr = sort @keyArr;
-        print @keyArr;
         foreach (@keyArr)
         {
             print $map{$_};
