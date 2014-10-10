@@ -48,3 +48,11 @@ Status: Failed Wrong Info
 Status: Failed Wrong Info
 [ Wed Oct  8 17:26:12 2014 ] FROM 127.0.0.1 username:daniel
 Status: Successful Access
+[ Fri Oct 10 14:19:56 2014 ] FROM 127.0.0.1 username:danie
+Status: Failed Wrong Info
+[ Fri Oct 10 14:19:58 2014 ] FROM 127.0.0.1 username:daniel
+Status: Successful Access
+[ Fri Oct 10 14:20:02 2014 ] FROM 127.0.0.1 username:daniel
+Status: Successful Access
+[ Fri Oct 10 14:20:09 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Access

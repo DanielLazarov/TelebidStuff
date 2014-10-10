@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
-use Data::Dumper;
 
 my %map = (
     'a' => 'a',
@@ -35,7 +34,6 @@ my %map = (
 sub answer($;$)
 {
     my ($check, $hashRef) = @_;
-    print Dumper($hashRef);
 
     if($check)
     {
@@ -62,7 +60,6 @@ sub answer($;$)
 sub isSorted($)
 {
     my @arr = @{$_[0]};
-    print Dumper(@arr);
 
     for (my $i = 0; $i< $#arr; $i++)
     {

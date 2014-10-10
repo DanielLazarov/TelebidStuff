@@ -378,7 +378,7 @@ FOR i IN 1..1000000 LOOP
 somedata, activation_date, foreign_master_id
 ) 
 values (
-'somedat', now() , i%7 + 1);
+'somedat', now() + '15 minutes', i%8 + 1);
 END LOOP;
 END
 $do$;
@@ -388,11 +388,10 @@ $do$;
 
 
 
-SELECT partman.create_parent('<schema_name>.<table_name>' , '<column_name>', 'time-dynamic', 'quarter-hour', null, 1);
+SELECT partman.create_parent('public.master' , 'activation_date', 'time-dynamic', 'quarter-hour', null, 1);
 
-DROP TRIGGER <table_name>_part_trig ON <table_name>;
 
-SELECT partman.partition_data_time('<schema_name>.<table_name>', <number_of_intervals_to_shard>);
+SELECT partman.partition_data_time('public.master', 1,1000);
 
 
 ###
