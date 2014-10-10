@@ -17,11 +17,24 @@ $(document).ready(function(){
         reqGen.sendRequest();
         event.preventDefault();
     });
+
+    $(document).on('click', '.sign-up-btn', function(){
+
+        reqGen.params = {};
+        reqGen.method = 'sign-up';
+        reqGen.successFunction = function(data){
+            $('#status > p').html(data.result.message);
+        };
+
+        reqGen.sendRequest();
+
+    });
+
     window.fbAsyncInit = function() {
         FB.init({
             appId      : '976879749004300',
             xfbml      : true,
-            version    : 'v2.1'
+            version    : 'v2.1',
         });
     };
 
@@ -33,25 +46,23 @@ $(document).ready(function(){
         fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
 
-     
-
-
-    $('#fbtest').on('click', function(){
-        FB.api('/me', function(response) {
-        }); 
-    });
-
-
-
     window.Facebook_login = function Facebook_login(){
-        FB.api('/me', function(response) {
-            reqGen.params = response;
-            reqGen.method = 'login';
-            reqGen.successFunction = function(data){
-                $('#status > p').html(data.result.message);
-            };
-            reqGen.sendRequest();
-        }); 
+        FB.login(function(response) {
+            if (response.authResponse) {
+                FB.api('/me', function(response) {
+                    console.log(JSON.stringify(response));
+                    reqGen.params = response;
+                    reqGen.method = 'login';
+                    reqGen.successFunction = function(data){
+                        $('#status > p').html(data.result.message);
+                    };
+                    reqGen.sendRequest();
+                });
+            } 
+            else {
+                console.log('User cancelled login or did not fully authorize.');
+            }
+        }, {scope: 'email'});
     }
 });
 

@@ -1,0 +1,50 @@
+[ Mon Oct  6 16:01:41 2014 FB-Login ] FROM 127.0.0.1 fb_id:297448140453092 name:Daniel Petrov
+Status: Successful Not Activated
+[ Mon Oct  6 16:02:06 2014 ] FROM 127.0.0.1 username:daniel
+Status: Successful Access
+[ Mon Oct  6 16:02:39 2014 ] FROM 127.0.0.1 username:daniel
+Status: Failed Wrong Info
+[ Mon Oct  6 17:06:15 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Not Activated
+[ Mon Oct  6 17:12:40 2014 ] FROM 10.20.2.141 username:daniel
+Status: Successful Access
+[ Mon Oct  6 17:13:37 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Not Activated
+[ Mon Oct  6 17:13:51 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Access
+[ Wed Oct  8 17:18:12 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Access
+[ Wed Oct  8 17:18:17 2014 ] FROM 127.0.0.1 username:daniel
+Status: Successful Access
+[ Wed Oct  8 17:18:24 2014 ] FROM 127.0.0.1 username:danie
+Status: Failed Wrong Info
+[ Wed Oct  8 17:18:59 2014 FB-Login ] FROM 127.0.0.1 fb_id:297448140453092 name:Daniel Petrov
+Status: Successful Access
+[ Wed Oct  8 17:20:29 2014 FB-Login ] FROM 127.0.0.1 fb_id:297448140453092 name:Daniel Petrov
+Status: Successful Access
+[ Wed Oct  8 17:23:14 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Newly Created
+[ Wed Oct  8 17:23:58 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Not Activated
+[ Wed Oct  8 17:24:00 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Not Activated
+[ Wed Oct  8 17:24:01 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Not Activated
+[ Wed Oct  8 17:24:02 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Not Activated
+[ Wed Oct  8 17:24:28 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Access
+[ Wed Oct  8 17:24:42 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Access
+[ Wed Oct  8 17:25:54 2014 FB-Login ] FROM 127.0.0.1 fb_id:904703529558826 name:Daniel Lazarov
+Status: Successful Access
+[ Wed Oct  8 17:26:00 2014 ] FROM 127.0.0.1 username:danie
+Status: Failed Wrong Info
+[ Wed Oct  8 17:26:03 2014 ] FROM 127.0.0.1 username:danie
+Status: Failed Wrong Info
+[ Wed Oct  8 17:26:03 2014 ] FROM 127.0.0.1 username:danie
+Status: Failed Wrong Info
+[ Wed Oct  8 17:26:09 2014 ] FROM 127.0.0.1 username:daniel
+Status: Failed Wrong Info
+[ Wed Oct  8 17:26:12 2014 ] FROM 127.0.0.1 username:daniel
+Status: Successful Access

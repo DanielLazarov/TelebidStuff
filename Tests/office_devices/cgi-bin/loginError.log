@@ -45,3 +45,96 @@ DETAIL:  Failing row contains (5, null, null, 904703529558826, Lazarov, Daniel).
 DETAIL:  Key (username)=() already exists.'
         };
 
+[Wed Oct  1 09:38:20 2014 from: 127.0.0.1]$VAR1 = {
+          'message' => 'called with 6 bind variables when 5 are needed',
+          'code' => '',
+          'number' => '-1'
+        };
+
+[Wed Oct  1 09:38:20 2014 from: 127.0.0.1]$VAR1 = {
+          'code' => '',
+          'message' => 'called with 6 bind variables when 5 are needed',
+          'number' => '-1'
+        };
+
+[Wed Oct  1 09:38:23 2014 from: 127.0.0.1]$VAR1 = {
+          'message' => 'called with 6 bind variables when 5 are needed',
+          'code' => '',
+          'number' => '-1'
+        };
+
+[Wed Oct  1 09:38:25 2014 from: 127.0.0.1]$VAR1 = {
+          'code' => '',
+          'message' => 'called with 6 bind variables when 5 are needed',
+          'number' => '-1'
+        };
+
+[Wed Oct  1 09:38:33 2014 from: 127.0.0.1]$VAR1 = {
+          'message' => 'called with 6 bind variables when 5 are needed',
+          'code' => '',
+          'number' => '-1'
+        };
+
+[Wed Oct  1 09:44:02 2014 from: 127.0.0.1]$VAR1 = {
+          'code' => '23502',
+          'message' => 'ERROR:  null value in column "fb_email" violates not-null constraint
+DETAIL:  Failing row contains (3, 904703529558826, {X-PBKDF2}HMACSHA2+512:AAAnEA:OTA0NzAzNTI5NTU4ODI2:C3KOCJGz+v0O5..., 904703529558826, Daniel, Lazarov, , f, 0, null).',
+          'number' => 7
+        };
+
+[Wed Oct  1 09:44:11 2014 from: 127.0.0.1]$VAR1 = {
+          'message' => 'called with 6 bind variables when 5 are needed',
+          'code' => '',
+          'number' => '-1'
+        };
+
+[Wed Oct  1 09:45:37 2014 from: 127.0.0.1]$VAR1 = {
+          'number' => 7,
+          'code' => '23502',
+          'message' => 'ERROR:  null value in column "fb_email" violates not-null constraint
+DETAIL:  Failing row contains (4, 904703529558826, {X-PBKDF2}HMACSHA2+512:AAAnEA:OTA0NzAzNTI5NTU4ODI2:C3KOCJGz+v0O5..., 904703529558826, Daniel, Lazarov, , f, 0, null).'
+        };
+
+[Wed Oct  1 09:58:14 2014 from: 127.0.0.1]$VAR1 = {
+          'number' => 7,
+          'code' => '23502',
+          'message' => 'ERROR:  null value in column "fb_email" violates not-null constraint
+DETAIL:  Failing row contains (5, 904703529558826, {X-PBKDF2}HMACSHA2+512:AAAnEA:OTA0NzAzNTI5NTU4ODI2:C3KOCJGz+v0O5..., 904703529558826, Daniel, Lazarov, , f, 0, null).'
+        };
+
+[Wed Oct  1 09:59:17 2014 from: 127.0.0.1]$VAR1 = {
+          'number' => 7,
+          'code' => '23502',
+          'message' => 'ERROR:  null value in column "fb_email" violates not-null constraint
+DETAIL:  Failing row contains (6, 904703529558826, {X-PBKDF2}HMACSHA2+512:AAAnEA:OTA0NzAzNTI5NTU4ODI2:C3KOCJGz+v0O5..., 904703529558826, Daniel, Lazarov, , f, 0, null).'
+        };
+
+[Mon Oct  6 14:33:27 2014 from: 127.0.0.1]$VAR1 = 'Undefined subroutine &Office::Authentication::Dumper called at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/Office/Authentication.pm line 78.
+';
+
+[Mon Oct  6 14:33:28 2014 from: 127.0.0.1]$VAR1 = 'Undefined subroutine &Office::Authentication::Dumper called at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/Office/Authentication.pm line 78.
+';
+
+[Mon Oct  6 14:35:28 2014 from: 127.0.0.1]$VAR1 = 'Undefined subroutine &Office::Authentication::Dumper called at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/Office/Authentication.pm line 79.
+';
+
+[Mon Oct  6 14:40:56 2014 from: 127.0.0.1]$VAR1 = 'Undefined subroutine &Office::Authentication::Dumper called at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/Office/Authentication.pm line 79.
+';
+
+[Mon Oct  6 14:41:14 2014 from: 127.0.0.1]$VAR1 = 'Undefined subroutine &Office::Authentication::Dumper called at /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/Office/Authentication.pm line 79.
+';
+
+[Mon Oct  6 15:40:07 2014 from: 127.0.0.1]$VAR1 = {
+          'code' => '23502',
+          'number' => 7,
+          'message' => 'ERROR:  null value in column "email" violates not-null constraint
+DETAIL:  Failing row contains (2, 904703529558826, , null, 904703529558826, Daniel, Lazarov, panik9@abv.bg, f, 0).'
+        };
+
+[Mon Oct  6 15:41:10 2014 from: 127.0.0.1]$VAR1 = {
+          'number' => 7,
+          'code' => '23502',
+          'message' => 'ERROR:  null value in column "email" violates not-null constraint
+DETAIL:  Failing row contains (3, 904703529558826, , null, 904703529558826, Daniel, Lazarov, panik9@abv.bg, f, 0).'
+        };
+

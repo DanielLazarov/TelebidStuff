@@ -17,6 +17,7 @@ use Office::CustomDD;
 use Office::FGenerator;
 use Office::DBInteraction;
 use Office::Authentication;
+use Office::Responses;
 
 our %HoF = (
     'custom_dropdown_fill'  =>  \&Office::CustomDD::customDropDown,
@@ -24,13 +25,42 @@ our %HoF = (
     'insert_or_update'      =>  \&Office::DBInteraction::insertOrUpdateRecord,
     'delete_record'         =>  \&Office::DBInteraction::deleteRecord,
     'login'                 =>  \&Office::Authentication::logIn,
+    'logout'                =>  \&LogOut,
+    'signup'                =>  \&Office::Authentication::SignUp
 );
+
+
+#Dispatch();
+
+
+
+
+sub Dispatch
+{
+    my $cgi = CGI->new;
+    my $requestData = JSON->new->decode($cgi->param('json_rpc'));
+
+    print $HoF{lc $$requestData{'method'}}->();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 our $dbName = "office_devices";
 our $host = "localhost";
 our $user = "pg_user";
 our $pw = "564564";
-our $defaultLanguage = 'en';
 
 our $dbh;
 
@@ -50,6 +80,14 @@ if($$requestData{'method'} eq 'login' )
 {
     processLogIn();
 }
+elsif($$requestData{'method'} eq 'logout' )
+{
+    LogOut();
+}
+elsif($$requestData{'method'} eq 'language_switch' )
+{
+    LanguageSwitch();
+}
 else
 {
     if(cookie('CGISESSID'))
@@ -58,20 +96,12 @@ else
     }
     else
     {
-        $cookieLanguage = $cgi->cookie(-name=>'language', -value=>$defaultLanguage, -expires => '+1M');
-        $header = $cgi->header(
-                        -cookie=>$cookieLanguage,
-                        -type=>'application/json',
-                        -charset=>'utf-8'
-                    );
-
         my %result = ('message' => '<script>location.reload()</script>');
 
-        print $header;
+        print Office::Responses::MakeHeader('no_access');
         print BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
     }
 }
-# close ERRORLOG;
 
 sub dispatch
 {
@@ -92,18 +122,7 @@ sub BuildJSONrpc
 
 sub processDataLoggedIn 
 {
-    $session = CGI::Session->load(cookie('CGISESSID')); 
-    $session->expire('+30m');
-    $cookieSessionID = CGI::Cookie->new(-name=>'CGISESSID', -value=>$session->id, -expires => '+30m');
-    $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>cookie('username'), -expires => '+30m');
-
-    $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>cookie('language'), -expires => '+1M');
-
-    $header = header(
-                    -cookie=>[$cookieSessionID,$cookieUsername,$cookieLanguage],
-                    -type=>'application/json',
-                    -charset=>'utf-8'
-                );
+    $header = Office::Responses::MakeHeader('already_in');
 
     try{
         $dbh = DBI->connect(
@@ -130,9 +149,6 @@ sub processDataLoggedIn
     }
     catch
     {
-        #$$_{'code'}    -> Postgress error code!!!
-        #$$_{'code'}    -> Some Number
-        #$$_{'code'}    -> Official Error Message
         open FILE, "> /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/error.log";
         print FILE "[" . localtime . " from: " . $client . "]" , Dumper($_) , "\n";
         close FILE;
@@ -146,7 +162,7 @@ sub processDataLoggedIn
             my %result = (
                 'status'    => 'sys_error',
                 'code'      => -32002, #Server error
-                'message'   => "Something went wrong.",
+                'message'   => "errSomething went wrong.",
             );
             print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
         }
@@ -161,6 +177,9 @@ sub processDataLoggedIn
 }
 
 sub processLogIn{
+
+    $header = Office::Responses::MakeHeader('no_access');
+
     try{
         $dbh = DBI->connect(
                                "DBI:Pg:dbname=$dbName; host=$host",
@@ -173,44 +192,21 @@ sub processLogIn{
                                    HandleError => \&dieOnDBIError,     
                                }
                             );
+
         my $auth = Office::Authentication::logIn($dbh,$$requestData{'params'});
 
         if($auth == 1)
         {
-            $session = CGI::Session->new(); 
-            $session->expire('+30m');
-            $cookieSessionID = CGI::Cookie->new(-name=>'CGISESSID', -value=>$session->id, -expires => '+30m');
-            if($$requestData{'params'}{'first_name'})
-            {
-                $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>$$requestData{'params'}{'first_name'}, -expires => '+30m');
-            }
-            else
-            {
-                $cookieUsername = CGI::Cookie->new(-name=>'username', -value=>$$requestData{'params'}{'username'}, -expires => '+30m');
-            }
-            if(cookie('language'))
-            {
-                $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>cookie('language'), -expires => '+1M');
-            }
-            else
-            {
-                $cookieLanguage = CGI::Cookie->new(-name=>'language', -value=>$defaultLanguage, -expires => '+1M');  
-            }
-            
-            $header = header(
-                    -cookie=>[$cookieSessionID,$cookieUsername,$cookieLanguage],
-                    -type=>'application/json',
-                    -charset=>'utf-8'
-                );
+
             my %result = ('message' => '<script>location.reload()</script>');
+
+
+            $header = Office::Responses::MakeHeader('login', $requestData);
+
             print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
         }
         else
         {
-            $header = header(
-                    -type=>'application/json',
-                    -charset=>'utf-8'
-                );
             my %result;
             if($auth == 0)
             {
@@ -227,7 +223,7 @@ sub processLogIn{
             else
             {
                 %result = ('message' => '*Something went wrong with the authentication.');
-            }
+            } 
             print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
         }
         $dbh->commit;
@@ -238,16 +234,13 @@ sub processLogIn{
         open FILE, ">> /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/loginError.log";
         print FILE "[" . localtime . " from: " . $client . "]" , Dumper($_)  ,"\n";
         close FILE;
+
         if($dbh)
         {
             $dbh->rollback;
             $dbh->disconnect;
         }
-            $header = header(
-                    -type=>'application/json',
-                    -charset=>'utf-8'
-                );
-        # print ERRORLOG "[" . localtime . "]", $_, "\n";
+
         my %result = (
             'status'    => 'sys_error',
             'code'      => -32002, #Server error
@@ -258,7 +251,6 @@ sub processLogIn{
 
 }
 
-#handle DBI Errors.
 sub dieOnDBIError
 {
     my %hash = (
@@ -272,35 +264,51 @@ sub dieOnDBIError
 sub handleDBIErrors
 {
     my($header,$jsonrpc,$id, $errorHash) = @_;
-        open FILE, ">> /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/errorDBI.log";
-        print FILE "[" . localtime . " from: " . $client . "]" . $$errorHash{'message'} . "\n";
-        close FILE;
+    open FILE, ">> /home/daniel/Repositories/TelebidStuff/Tests/office_devices/cgi-bin/errorDBI.log";
+    print FILE "[" . localtime . " from: " . $client . "]" . $$errorHash{'message'} . "\n";
+    close FILE;
 
-        my %result;
+    my %result;
 
-        if($$errorHash{'code'} eq 23505)
-        {
-            %result = (
-                'status'    => 'peer_error',
-                'code'      => -32003, #Server error
-                'message'   => "Error: Such record already exists.",
-            );
-        }
-        elsif($$errorHash{'code'} eq 23503)
-        {
-            %result = (
-                'status'    => 'peer_error',
-                'code'      => -32003, #Server error
-                'message'   => "Error: Involving non existant record",
-            );
-        }
-        else
-        {
-            %result = (
-                'status'    => 'peer_error',
-                'code'      => -32003, #Server error
-                'message'   => "An error occured while Inserting a new record",      
-            );      
-        }
-        print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
+    if($$errorHash{'code'} eq 23505)
+    {
+        %result = (
+            'status'    => 'peer_error',
+            'code'      => -32003, #Server error
+            'message'   => "Error: Such record already exists.",
+        );
+    }
+    elsif($$errorHash{'code'} eq 23503)
+    {
+        %result = (
+            'status'    => 'peer_error',
+            'code'      => -32003, #Server error
+            'message'   => "Error: Involving non existant record",
+        );
+    }
+    else
+    {
+        %result = (
+            'status'    => 'peer_error',
+            'code'      => -32003, #Server error
+            'message'   => "An error occured while Inserting a new record",      
+        );      
+    }
+    print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
+}
+
+sub LogOut
+{
+    my %result = ('message' => '<script>location.reload()</script>');
+
+    $header = Office::Responses::MakeHeader('logout');
+    print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
+}
+
+sub LanguageSwitch
+{
+    my %result = ('message' => '<script>location.reload()</script>');
+
+    $header = Office::Responses::MakeHeader('language_switch', $requestData);
+    print $header, BuildJSONrpc($$requestData{'jsonrpc'}, \%result, $$requestData{'id'});
 }

@@ -2,13 +2,23 @@ CREATE TABLE users (
 id SERIAL PRIMARY KEY,
 username TEXT UNIQUE NOT NULL,
 password TEXT NOT NULL,
-fb_id TEXT NOT NULL DEFAULT '',
-fb_first_name TEXT NOT NULL DEFAULT '',
-fb_last_name TEXT NOT NULL DEFAULT '',
-email TEXT NOT NULL DEFAULT'',
-activated BOOLEAN NOT NULL DEFAULT 'f'
+email TEXT UNIQUE NOT NULL,
+fb_id TEXT UNIQUE,
+fb_first_name TEXT,
+fb_last_name TEXT,
+fb_email TEXT UNIQUE,
+activated BOOLEAN NOT NULL DEFAULT 'f',
 access_level INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TABLE sessions(
+id SERIAL PRIMARY KEY,
+user_id INTEGER NOT NULL REFERENCES users(id),
+session_id TEXT NOT NULL,
+started TIMESTAMP NOT NULL DEFAULT now(),
+expires TIMESTAMP NOT NULL DEFAULT now() + '30 minutes'
+);
+
 
 
 
@@ -164,3 +174,241 @@ concat('Мрежа',cast(i as varchar))
 END LOOP;
 END
 $do$;
+
+
+
+
+
+SELECT partman.partition_data_time('master');
+
+
+
+
+
+
+
+
+
+
+
+
+DO
+$do$
+BEGIN
+FOR i IN 1..2000000 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + i);
+END LOOP;
+END
+$do$;
+
+
+
+CREATE OR REPLACE FUNCTION on_actionlog_update() RETURNS TRIGGER AS $$
+BEGIN
+        INSERT INTO action_log_passed VALUES (NEW.*);
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION on_actionlog_update() RETURNS TRIGGER AS $$
+BEGIN
+    IF ( NEW.active = 'f' ) THEN
+        INSERT INTO action_log_passed VALUES (NEW.*);
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER action_log_update
+    AFTER UPDATE OF active ON action_log
+    FOR EACH ROW EXECUTE PROCEDURE on_actionlog_update();
+
+
+CREATE TABLE action_log (
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    country_code char(2),
+    content text,
+    active boolean default 't'
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE DATABASE shard_test;
+CREATE SCHEMA partman;
+CREATE EXTENSION pg_partman SCHEMA partman;
+\c shard_test
+
+CREATE TABLE master(
+id SERIAL PRIMARY KEY,
+somedata TEXT,
+activation_date TIMESTAMP NOT NULL DEFAULT now(),
+is_active BOOLEAN NOT NULL DEFAULT 't',
+master_foreign_id INTEGER references master_foreign
+);
+
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now());
+END LOOP;
+END
+$do$;
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + '15 minutes');
+END LOOP;
+END
+$do$;
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + '30 minutes');
+END LOOP;
+END
+$do$;
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + '45 minutes');
+END LOOP;
+END
+$do$;
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + '60 minutes');
+END LOOP;
+END
+$do$;
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + '75 minutes');
+END LOOP;
+END
+$do$;
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + '90 minutes');
+END LOOP;
+END
+$do$;
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, date
+) 
+values (
+'somedat', now() + '105 minutes');
+END LOOP;
+END
+$do$;
+
+DO
+$do$
+BEGIN
+FOR i IN 1..100 LOOP
+   INSERT INTO master ( 
+somedata, activation_date, master_foreign_id
+) 
+values (
+'somedat', now() + '45 minutes', i%3 + 1);
+END LOOP;
+END
+$do$;
+
+
+######
+
+
+
+SELECT partman.create_parent('<schema_name>.<table_name>' , '<column_name>', 'time-dynamic', 'quarter-hour', null, 1);
+
+DROP TRIGGER <table_name>_part_trig ON <table_name>;
+
+SELECT partman.partition_data_time('<schema_name>.<table_name>', <number_of_intervals_to_shard>);
+
+
+###
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

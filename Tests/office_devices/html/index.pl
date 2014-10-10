@@ -81,6 +81,9 @@ try{
 }
 catch
 {
+    open ERRORLOG , ">> /var/log/office_devices/error.log";
+    print ERRORLOG "[" . localtime . "]" . $_ ;
+    close ERRORLOG;
     out('error');
 };
 
@@ -127,6 +130,7 @@ sub loggedInOutput
                 }
             }
             $header = 0;
+            next;
         }
         #Translation exists
         if($args[$languageIndex])

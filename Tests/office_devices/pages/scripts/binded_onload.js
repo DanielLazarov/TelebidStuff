@@ -34,13 +34,28 @@
 
 //---------Language SWITCH ------------------------------------------------
 
-    $('.language-form').on('click', 'img', function(){
+    $('.language-select').on('click', 'img', function(){
 
-        $(this).siblings('input.input-current-language').val($(this).attr('language'));
-
-        $(this).closest('form').submit();
+        var params = {};
+        params.language = $(this).attr('language');
+        reqGen.method = 'language_switch';
+        reqGen.params = params;
+        reqGen.successFunction = function(data){
+            $('#state').html(data.result.message);
+        };
+        reqGen.sendRequest();
     });
 //-------------------------------------------------------------------------
+
+    $(document).on('click', '.logout-btn', function(){
+        var params = {};
+        reqGen.method = 'logout';
+        reqGen.params = params;
+        reqGen.successFunction = function(data){
+            $('#state').html(data.result.message);
+        };
+        reqGen.sendRequest();
+    });
 
 //-------------RESULT TABLE SEARCH----------------------------------------------
 
@@ -92,32 +107,6 @@
          console.log(button.attr('action'));
          var loading = button.siblings('.loading');
         var status = $(this).children('.status');
-
-        // formData = new FormData($(this)[0]);
-        // formData.append("action", button.attr('action'));
-        // console.log(formData);
-        // button.prop('disabled', true);
-        // loading.show();
-        // $.ajax({
-        //     type: "post",
-        //     url: "../perl/insert_handler.cgi",
-        //     cache: false,
-        //     data: formData,
-        //     processData:false,
-        //     contentType: false,
-        // })
-        //     .done(function(data) {
-        //         if(data.status == 'loggedout'){
-        //             location.reload(); 
-        //         }
-        //         else{
-        //             status.html(data.status);
-        //         }
-        //         button.prop('disabled', false);
-        //         loading.hide();
-        //     });
-        // 
-
         formData = new FormData($(this)[0]);
         formData.append('action', button.attr('action'));
         reqGen.processData = false;
@@ -132,11 +121,6 @@
         }
         reqGen.sendRequest();
         event.preventDefault();
-
-        // var button = $(this).children('.submit-btn').children('input');
-        // var loading = button.siblings('.loading');
-        // var status = $(this).children('.status');
-
     });
 //----------------------------------------------------------------------------------
 
@@ -220,3 +204,10 @@ function customDDSearch(src,reqGen){
     };
     reqGen.sendRequest();
 }
+
+function locationHashChanged() {
+    var stateObj = { foo: "bar" };
+    history.pushState(null, null, location.hash);
+}
+
+window.onhashchange = locationHashChanged;

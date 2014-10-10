@@ -74,7 +74,7 @@ sub checkGrade
             my $mech = WWW::Mechanize->new();
             $mech->proxy(['http', 'ftp'], 'socks://localhost:9050');
             $mech->agent("Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
-            #$mech->agent_alias( 'Windows IE 6' );
+            
             $mech->get($url);
             $mech->form_name("studlogin");
             $mech->field('egn' => $egn);

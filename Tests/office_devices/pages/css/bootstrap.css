@@ -77,14 +77,13 @@ input[type="file"]{
     cursor: pointer;
 }
 .language-select img:hover{
-    border: solid 2px #D18D3F;
+    border: solid 2px #9fc1e8;
 }
 .language-select img.active{
-  border: solid 2px #D18D3F;
+  border: solid 2px #9fc1e8;
 }
 .main-container .btn:hover{
-   background-color: rgb(209,141,63);
-   color:white;
+  border: solid 1px #2D4486;
 }
 .main-container .btn{
     font-weight: 700;
@@ -120,7 +119,7 @@ input[type="file"]{
   width:90%;
   max-width: 300px;
   border-radius: 30px;
-  border: 5px solid #d18d3f;
+  border: 5px solid #9fc1e8;
   margin-top: 20%;
   padding: 0% 2% 2% 2%;
   background-color: #3F83D1;
@@ -132,12 +131,6 @@ input[type="file"]{
     margin-left: 5%;
 }
 
-.log-in-form >.btn{
-  margin-top: 20px;
-  height: 25px;
-  padding-top: 2px;
-  width: 50%;
-}
 .log-in-form > #fb-root > .fb-login-button{
     margin-top: 20px;
     margin-left: 5px;
@@ -229,11 +222,12 @@ form .table tr td{
 }
 
 .main-container {
-  margin:0 auto; 
+  margin: auto;
+  margin-top: 20px;
   width: 80%; 
   height: 100%;
   background-color: #3F83D1;
-  border: 5px solid #d18d3f;
+  border: 5px solid #9fc1e8;
   border-radius: 10px;
   padding-top: 20px;
 }
@@ -302,7 +296,7 @@ input[type="radio"] {
 }
 .result-table thead {
   font-weight: bold;
-  border-bottom: dotted 2px #3F83D1;
+  border-bottom: dotted 2px #2D4486;
 }
 .result-table caption{
     color: white;
@@ -325,9 +319,11 @@ tbody{
 
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 html {
+  background-color: rgba(157,153,126,0.4) ;
   font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
+
 }
 body {
   margin: 0;
@@ -1219,7 +1215,6 @@ body {
   font-size: 14px;
   line-height: 1.42857143;
   color: #333;
-  background-color: #fff;
 }
 input,
 button,
