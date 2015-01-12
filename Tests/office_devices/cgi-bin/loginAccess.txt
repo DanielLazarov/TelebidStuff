@@ -1,3 +1,0 @@
-$VAR1 = {
-          'password' => '{X-PBKDF2}HMACSHA2+512:AAAnEA:ZGFuaWVs:8aDMtbQpQLbGL3xN9M0uprSFeYlYIujhaWfsPAYLI5IMQirqi8ifbPKX+nENfZMCojf8IzBFRlzKQAJyalFNgw=='
-        };
