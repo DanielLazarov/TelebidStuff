@@ -31,6 +31,8 @@ my %map = (
     'z' => 'z',
     );
 
+our $found = 0;
+
 sub answer($;$)
 {
     my ($check, $hashRef) = @_;
@@ -82,38 +84,118 @@ sub input
     }
     return \@arr;
 }
-my $success = 0;
+# my $success = 0;
 my @arr = @{input()};
+my @takenArr;
+my @currentArr;
 
-foreach my $key (keys %map)
+
+Permutate(0,25,\@takenArr,\@currentArr,\%map, \@arr);
+
+
+if(!$found)
 {
-    foreach my $keyInner (keys %map)
-    {
-        my @currentArr = @arr;
-        if($key ne $keyInner)
-        {
-            my $tmp = $map{$key};
-            $map{$key} = $map{$keyInner};
-            $map{$keyInner} = $tmp;
-            for (my $i = 0; $i <= $#arr; $i++) 
-            {
-                for (my $j = 0; $j < length($currentArr[$i]); $j++) 
-                {
-                    substr($currentArr[$i],$j,1) = $map{substr $arr[$i] , $j, 1};
-                }
-            }
+    print "No\n";
+}
 
-            if(isSorted(\@currentArr))
+# foreach my $key (keys %map)
+# {
+#     foreach my $keyInner (keys %map)
+#     {
+#         my @currentArr = @arr;
+#         if($key ne $keyInner)
+#         {
+#             my $tmp = $map{$key};
+#             $map{$key} = $map{$keyInner};
+#             $map{$keyInner} = $tmp;
+#             for (my $i = 0; $i <= $#arr; $i++) 
+#             {
+#                 for (my $j = 0; $j < length($currentArr[$i]); $j++) 
+#                 {
+#                     substr($currentArr[$i],$j,1) = $map{substr $arr[$i] , $j, 1};
+#                 }
+#             }
+
+#             if(isSorted(\@currentArr))
+#             {
+#                 $success = 1;
+#                 last;
+#             }
+#         }
+#     }
+#     if($success)
+#     {
+#         last;
+#     }
+# }
+
+# answer($success, \%map);
+
+our $counter = 0;
+
+sub Permutate
+{
+    my ($currentPosition,$last,$takenArrRef,$currentArrRef,$mapRef, $inputArrRef) = @_;
+    my $sorted = "abcdefghijklmnopqrstuvwxyz";
+    my $isLast = 0;
+    my @taken = @{$takenArrRef};
+    my @currentArr = @{$currentArrRef};
+    my @inputArr = @{$inputArrRef};
+    if(!$found)
+    {
+        if($currentPosition == $last)
+    {
+        $isLast = 1;
+    }
+
+
+    for (my $j = 0; $j <= $last; $j++) {
+        if($currentPosition == 0)
+        {
+            print "currently on first position: " . substr $sorted, $j, 1;
+            print "\n";
+        }
+        my $possible = 1;
+        for (my $i = 0; $i <= $#taken; $i++) {
+            if($taken[$i] eq substr($sorted,$j, 1))
             {
-                $success = 1;
-                last;
+                $possible = 0;
+            }
+        }
+        if($possible)
+        {
+            $currentArr[$currentPosition] = substr($sorted,$j, 1);
+            push @taken, substr($sorted,$j, 1);
+            if(!$isLast)
+            {
+
+                Permutate($currentPosition + 1, $last, \@taken, \@currentArr,$mapRef, $inputArrRef);
+                splice @taken, $#taken, 1;            
+            }
+            else
+            {
+                for (my $i = 0; $i <= $#currentArr; $i++) {
+                    $map{substr($sorted,$i,1)} = $currentArr[$i];
+                }
+
+                for (my $i = 0; $i <= $#inputArr; $i++) 
+                {
+                    for (my $j = 0; $j < length($inputArr[$i]); $j++) 
+                    {
+                        substr($inputArr[$i],$j,1) = $map{substr $arr[$i] , $j, 1};
+                    }
+                }
+
+                if(isSorted(\@inputArr))
+                {   
+                    $found = 1;
+                    print "Yes\n",  @currentArr , "\n";
+                }
             }
         }
     }
-    if($success)
-    {
-        last;
-    }
-}
 
-answer($success, \%map);
+    }
+
+    
+}
