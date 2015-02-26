@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 
-use LWP::Protocol::socks;
 use WWW::Mechanize;
 use utf8;
 
@@ -72,9 +71,7 @@ sub checkGrade
     {
         eval {
             my $mech = WWW::Mechanize->new();
-            $mech->proxy(['http', 'ftp'], 'socks://localhost:9050');
-            $mech->agent("Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
-            
+        
             $mech->get($url);
             $mech->form_name("studlogin");
             $mech->field('egn' => $egn);
