@@ -1,0 +1,15 @@
+---------------TAble organisation-----------
+
+---Heading---
+<type><colname_length><column_name><type><colname_length><column_name>...
+    -type: number (ubite),
+    -column_length: number(uint)
+    -column_name: string 
+
+
+---Rows---
+<value_length><value><value_length><value><value_length><value>
+    -value_length: number(uint) #limmited? TODO make it unlimitted
+     -value = 0 => NULL
+    -value: the real value(type is known from heading).
+
