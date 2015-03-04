@@ -1,0 +1,60 @@
+$VAR1 = [];
+COL_COUNT: 4
+COLUMN: $VAR1 = {
+          'name' => 'c',
+          'type' => 1
+        };
+COLUMN: $VAR1 = {
+          'type' => 111,
+          'name' => 'u'
+        };
+COLUMN: $VAR1 = {
+          'name' => '1',
+          'type' => 109
+        };
+COLUMN: $VAR1 = {
+          'name' => 'c',
+          'type' => 2
+        };
+COL_COUNT: 4
+COLUMN: $VAR1 = {
+          'name' => 'column1',
+          'type' => 1
+        };
+COLUMN: $VAR1 = {
+          'name' => 'columnn2',
+          'type' => 2
+        };
+COLUMN: $VAR1 = {
+          'name' => 'columnnn3',
+          'type' => 2
+        };
+COLUMN: $VAR1 = {
+          'type' => 1,
+          'name' => 'columnnnn4'
+        };
+COL_COUNT: 4
+COLUMN: $VAR1 = {
+          'type' => 1,
+          'name' => 'column1',
+          'write' => sub { "DUMMY" },
+          'read' => sub { "DUMMY" }
+        };
+COLUMN: $VAR1 = {
+          'read' => sub { "DUMMY" },
+          'write' => sub { "DUMMY" },
+          'name' => 'columnn2',
+          'type' => 2
+        };
+COLUMN: $VAR1 = {
+          'type' => 2,
+          'name' => 'columnnn3',
+          'read' => sub { "DUMMY" },
+          'write' => sub { "DUMMY" }
+        };
+COLUMN: $VAR1 = {
+          'write' => sub { "DUMMY" },
+          'read' => sub { "DUMMY" },
+          'name' => 'columnnnn4',
+          'type' => 1
+        };
