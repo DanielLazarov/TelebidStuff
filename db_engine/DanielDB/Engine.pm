@@ -52,11 +52,14 @@ sub Insert()#TODO insert_hash may be arr_ref
     }
     open($fh, "+>>" . $$self{db_dir} . "/$table_name") or die $!;
 
+
     my $arr_ref = ReadTableHeader($fh);
     
     my @columns_arr = @{$arr_ref};
 
     my $col_count = scalar @columns_arr;
+
+    WriteRowHeading($fh);
 
     foreach my $column(@columns_arr)
     {
@@ -111,6 +114,20 @@ sub Select()
         }
     }
     return \@result;
+}
+
+sub WriteRowHeading($;$)
+{
+    my($fh, $params) = @_;
+
+    my $flags = 0;
+
+    if(defined $$params{deleted})
+    {
+        $flags += 128;
+    }
+
+    print $fh(pack("C",$flags );
 }
 sub Update()
 {
