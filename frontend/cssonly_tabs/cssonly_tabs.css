@@ -1,0 +1,32 @@
+.tab-title:checked ~ div.tab-container{
+    display:block;
+    
+}
+
+.tab-title:checked + label{
+    display:block;
+     color: red;   
+}
+.tab-title:not(:checked) ~ div.tab-container{
+    display:none;
+    
+}
+#highest{
+    position:relative;
+}
+.tab-container{
+    position:absolute;
+    left:200px;
+    top:-15px;
+}
+.tab-upper-container > label{
+    width: 180px;
+    border: 1px solid black;
+    padding: 5px;
+    display: inline-block;
+}
+input.tab-title{
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}

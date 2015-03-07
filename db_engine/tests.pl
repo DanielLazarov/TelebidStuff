@@ -120,8 +120,8 @@ sub MixedBigColumnsUpdate($)#Rows inserted: 100000, Time :183.23756480217s.
 
 #####################RUN TESTS##########################################################
 
-#FiveIntColumnsInsert($db, 100000);
-#FiveIntColumnsUpdate($db);
+FiveIntColumnsInsert($db, 100000);
+FiveIntColumnsUpdate($db);
 MixedBigColumnsInsert($db, 100000);
 MixedBigColumnsUpdate($db);
 
