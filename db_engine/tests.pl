@@ -6,7 +6,9 @@ use Time::HiRes qw( time );
 
 use DanielDB::Engine;
 
-my $db = DanielDB::Engine->connect("db_1");
+
+#DanielDB::Engine::CreateDB("db_2");
+my $db = DanielDB::Engine->connect("db_2");
 
 sub FiveIntColumnsInsert($$)#Rows inserted: 100000, Time:5.08060479164124s.
 {
@@ -96,7 +98,7 @@ sub FiveIntColumnsUpdate($)
     print "Time:",  time() - $start , "s.\n";
 }
 
-sub MixedBigColumnsUpdate($)#Rows inserted: 100000, Time :183.23756480217s.
+sub MixedBigColumnsUpdate($)
 {
     my($db) = @_;
 
@@ -116,12 +118,13 @@ sub MixedBigColumnsUpdate($)#Rows inserted: 100000, Time :183.23756480217s.
     $db->Update("mixed_table", $data);
 
     print "Time:",  time() - $start , "s.\n";
+    
 }
 
 #####################RUN TESTS##########################################################
 
-FiveIntColumnsInsert($db, 100000);
-FiveIntColumnsUpdate($db);
+#FiveIntColumnsInsert($db, 10);
+#FiveIntColumnsUpdate($db);
 MixedBigColumnsInsert($db, 100000);
 MixedBigColumnsUpdate($db);
 

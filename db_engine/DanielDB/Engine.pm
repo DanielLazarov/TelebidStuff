@@ -30,8 +30,11 @@ sub connect($$)
 
     my $err_log;
 
-
-    if( -d "$DDB_ROOT_DIR" . $db)
+    if(!defined $db)
+    {
+        return bless {}, $class;
+    }
+    elsif( -d "$DDB_ROOT_DIR" . $db)
     {
         return bless {db_dir => $DDB_ROOT_DIR . $db}, $class;   
     }
@@ -41,9 +44,11 @@ sub connect($$)
     }
 }
 
-sub CreateDB()
+sub CreateDB($)
 {
-    my ($self) = @_;
+    my ($db_name) = @_;
+
+    mkdir($DDB_ROOT_DIR . $db_name) or die $!;
 }
 
 sub CreateTable($$$)
@@ -226,12 +231,14 @@ sub Update($$$)
     my ($self, $table_name, $update_hash) = @_;
 
     my $fh;
+    my $fhw;
 
     if(!-f $$self{db_dir} . "/$table_name")
     {
         die "Not Existing Table";
     }
-    open($fh, "+<", $$self{db_dir} . "/$table_name") or die $!;
+    open($fh, "<", $$self{db_dir} . "/$table_name") or die $!; 
+    open($fhw, ">>", $$self{db_dir} . "/$table_name") or die $!;
     
     my ($arr_ref, $row_count) = ReadTableMeta($fh);
 
@@ -264,6 +271,9 @@ sub Update($$$)
             }
             push @row, $val;
         }
+
+        my $next_row_position = tell($fh);
+        seek($fh, $next_row_position - $row_beginning_pos, 1);
         
 
         if($is_valid)
@@ -278,21 +288,27 @@ sub Update($$$)
 
             my $next_row_position = tell($fh);
 
-            seek($fh, $row_beginning_pos, 0);
+            # seek($fh, $row_beginning_pos, 0);
             WriteRowMeta($fh, {deleted => 1});#updated row meta
-            seek($fh, 0, 2);          
+            # seek($fh, 0, 2);          
 
-            WriteRowMeta($fh);#new row meta
+            WriteRowMeta($fhw);#new row meta
             foreach my $column(@columns_arr)
             {
-                $$column{write}->($fh, $$update_row{$$column{name}});
+                $$column{write}->($fhw, $$update_row{$$column{name}});
             }   
             seek($fh, $next_row_position, 0);
         }
     }
+
+    close($fh);
+    close($fhw);
 }
 
-
+sub Delete($$)
+{
+    my($self, $table_name) = @_;            
+}
 
 sub ReadInt($)
 {
@@ -301,7 +317,7 @@ sub ReadInt($)
 
     #info byte variables1
     my $is_null = 0;
-    
+   
     read($fh, $buffer, 1);
     my $flags = unpack("C", $buffer);
     if($flags & (1<<7))
