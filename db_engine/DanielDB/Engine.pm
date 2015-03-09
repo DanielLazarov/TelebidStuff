@@ -6,6 +6,7 @@ use bytes;
 
 use Config;
 use Data::Dumper;
+use IO::File;
 
 =pod
 Daniel DB.
@@ -65,7 +66,7 @@ sub CreateTable($$$)
 
     my @columns_arr = @{$columns};
 
-    print $fh pack("I", 0);
+    #print $fh pack("I", 0);
     print $fh pack("C", scalar @columns_arr); #column count
 
     foreach my $column(@columns_arr)
@@ -87,8 +88,8 @@ sub ReadTableMeta($)
 
     my $buffer = "";
 
-    read($fh, $buffer, $Config{intsize});
-    my $row_count = unpack("I", $buffer);
+    #read($fh, $buffer, $Config{intsize});
+    #my $row_count = unpack("I", $buffer);
 
     read($fh, $buffer, 1);
     my $col_count = unpack("C", $buffer);
@@ -107,10 +108,251 @@ sub ReadTableMeta($)
         read($fh, $buffer, $colname_length);
         $$column{name} = $buffer;
 
-        push @col_arr, $column;    
+        push @col_arr, $column;
+    }
+    return $fh, \@col_arr;    #TODO remove row count.
+}
+
+sub ReadRow($$)
+{
+    my($fh, $arr_of_handlers_ref) = @_;
+
+    my @arr_of_handlers = @{$arr_of_handlers_ref};
+
+    my @row;
+    foreach my $handler(@arr_of_handlers)
+    {
+        push @row, $handler->($fh);
     }
 
-    return \@col_arr, $row_count;
+    return $fh, \@row;
+}
+
+sub WriteRow($$$)
+{
+    my($fh, $arr_of_handlers_ref, $arr_of_values_ref) = @_;
+
+    my @arr_of_handlers = @{$arr_of_handlers_ref};
+    my @arr_of_values = @{$arr_of_values_ref};
+
+    my $length = scalar @arr_of_handlers;
+
+    for(my $i = 0; $i < $length; $i++)
+    {
+        $arr_of_handlers[$i]->($fh, $arr_of_values[$i]);
+    }
+}
+
+sub WriteRow1($$$)
+{
+    my($table_name, $arr_of_handlers_ref, $arr_of_values_ref) = @_;
+
+    my $fh;
+    open($fh, ">>", $table_name);
+
+    my @arr_of_handlers = @{$arr_of_handlers_ref};
+    my @arr_of_values = @{$arr_of_values_ref};
+
+    my $length = scalar @arr_of_handlers;
+
+    for(my $i = 0; $i < $length; $i++)
+    {
+        $arr_of_handlers[$i]->($fh, $arr_of_values[$i]);
+    }
+
+    close($fh);
+}
+
+sub Select($$;$)
+{
+    my ($self, $table_name, $select_hash) = @_;
+
+    my $fh;
+
+    if(!-f $$self{db_dir} . "/$table_name")
+    {
+        die "Not Existing Table";
+    }
+    open($fh, "<", $$self{db_dir} . "/$table_name") or die $!;
+    
+    seek($fh,0,2);
+    my $last_pos = tell($fh);
+    seek($fh,0,0);
+
+
+    my ($fh, $arr_ref) = ReadTableMeta($fh);
+
+    my @columns_arr = @{$arr_ref};
+    my @colnames;
+    my @handlers;
+    my @result;
+
+    foreach my $column(@columns_arr) #get Colnames
+    {
+        push @colnames, $$column{name};
+        push @handlers, $$column{read};
+    }
+    push @result, \@colnames;
+
+    while(tell($fh) < $last_pos)
+    {
+        my ($fh, $row_flags) = ReadRowMeta($fh);
+        my ($fh, $row) = ReadRow($fh, \@handlers);
+
+        my $is_valid = 1;#TODO conditions!+
+    
+
+        if($is_valid && !$$row_flags{deleted})
+        {
+            # push @result, $row;
+        }
+    }
+    return \@result;
+}
+
+sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
+{
+    my ($self, $table_name, $insert_hash) = @_;
+
+    my $fh;
+    if(!-f $$self{db_dir}. "/$table_name")
+    {
+        die "Not Existing Table";
+    }
+    open($fh, "+<" . $$self{db_dir} . "/$table_name") or die $!;
+
+    my $arr_ref;
+
+    ($fh, $arr_ref) = ReadTableMeta($fh);
+   
+    my @columns_arr = @{$arr_ref};
+
+    my $col_count = scalar @columns_arr;
+    seek($fh, 0, 2);
+    $fh = WriteRowMeta($fh);
+
+    foreach my $column(@columns_arr)
+    {
+        $$column{write}->($fh, $$insert_hash{$$column{name}});
+    }
+    
+    close($fh);
+}
+
+
+sub Update($$$)
+{
+    my ($self, $table_name, $update_hash) = @_;
+
+    my $fh;
+
+    if(!-f $$self{db_dir} . "/$table_name")
+    {
+        die "Not Existing Table";
+    }
+    open($fh, "+<", $$self{db_dir} . "/$table_name") or die $!; 
+    
+    seek($fh,0,2);
+    my $last_pos = tell($fh);    
+    seek($fh,0,0);
+    
+    my $arr_ref;
+    ($fh, $arr_ref) = ReadTableMeta($fh);
+    
+    my @columns_arr = @{$arr_ref};
+    my @handlers_read;
+    my @handlers_write;
+
+    foreach my $column(@columns_arr) #get Colnames
+    {
+        push @handlers_read, $$column{read};
+        push @handlers_write, $$column{write}
+    }
+
+    while(tell($fh) < $last_pos)
+    {
+        my $beginning_row_pos = tell($fh);
+        my ($fh, $row_flags) = ReadRowMeta($fh);
+        my ($fh, $row_ref) = ReadRow($fh, \@handlers_read);
+
+        my @row = @{$row_ref};
+        my $is_valid = 1;#TODO conditions!+
+
+        if($is_valid && !$$row_flags{deleted})
+        {
+            my $next_row_pos = tell($fh);
+            seek($fh, $beginning_row_pos, 0);
+            $fh = WriteRowMeta($fh, {deleted => 1});
+            
+            my $cols_count = scalar(@columns_arr);
+            my $update_row;
+
+            for(my $i = 0; $i < $cols_count; $i++)
+            {
+                $$update_row{$columns_arr[$i]{name}} = exists ($$update_hash{$columns_arr[$i]{name}}) ?  $$update_hash{$columns_arr[$i]{name}} : $row[$i];    
+            }
+            seek($fh, 0,2);        
+
+            $fh = WriteRowMeta($fh);
+            foreach my $column(@columns_arr)
+            {
+                $$column{write}->($fh, $$update_row{$$column{name}});
+            }
+            #$fh = WriteRow($fh, \@handlers_write, $update_row);
+
+            seek($fh, $next_row_pos, 0);
+        }
+    }
+
+    close($fh);
+}
+
+sub DeleteRecord($$;$)
+{
+    my($self, $table_name, $conditions_hash) = @_;     
+
+    my $fh;
+    my $arr_ref;
+
+    open ($fh, "+<", $$self{db_dir} . "/" . $table_name);
+
+    seek($fh,0,2);
+    my $last_pos = tell($fh);
+    print "Last pos: $last_pos";
+    seek($fh,0,0);
+
+    ($fh, $arr_ref) = ReadTableMeta($fh);
+    
+    my @columns_arr = @{$arr_ref};
+    my @handlers;
+    my @result;
+
+    foreach my $column(@columns_arr) #get Colnames
+    {
+        push @handlers, $$column{read};
+    }
+
+    while(tell($fh) < $last_pos)
+    {
+        my $row_beginning = tell($fh);
+
+        my $row_flags;
+        my $row;
+        ($fh, $row_flags) = ReadRowMeta($fh);
+        ($fh, $row) = ReadRow($fh, \@handlers);
+
+        my $is_valid = 1;#TODO conditions!+
+    
+        if($is_valid && !$$row_flags{deleted})
+        {
+            my $row_ending = tell($fh);
+            seek($fh, $row_beginning, 0);
+            $fh = WriteRowMeta($fh, {deleted => 1});
+            seek($fh, $row_ending, 0);
+        }
+    }
+
+    close($fh);
 }
 
 sub WriteRowMeta($;$)
@@ -125,6 +367,8 @@ sub WriteRowMeta($;$)
     }
 
     print $fh pack("C",$flags );
+
+    return $fh;
 }
 
 sub ReadRowMeta($)
@@ -144,172 +388,8 @@ sub ReadRowMeta($)
         $$result{deleted} = 1;
     }
 
-    return $result;
+    return ($fh, $result);
 }
-
-sub Select($$;$)
-{
-    my ($self, $table_name, $select_hash) = @_;
-
-    my $fh;
-
-    if(!-f $$self{db_dir} . "/$table_name")
-    {
-        die "Not Existing Table";
-    }
-    open($fh, "<", $$self{db_dir} . "/$table_name") or die $!;
-    
-    my ($arr_ref, $row_count) = ReadTableMeta($fh);
-
-    my @columns_arr = @{$arr_ref};
-    my @colnames;
-    my @result;
-
-    foreach my $column(@columns_arr) #get Colnames
-    {
-        push @colnames, $$column{name};
-    }
-    push @result, \@colnames;
-
-    while(!eof($fh))
-    {
-        my @row;
-
-        my $row_flags = ReadRowMeta($fh);
-        my $is_valid = 1;#TODO conditions!+
-        foreach my $column(@columns_arr)
-        {
-            my $val = $$column{read}->($fh);
-            #TODO do the checking
-            if(!$is_valid)
-            {
-                last;
-            }
-            push @row, $val;
-        }
-        if($is_valid && !$$row_flags{deleted})
-        {
-            push @result, \@row;
-        }
-    }
-    return \@result;
-}
-
-sub Insert($$$)#TODO insert_hash may be arr_ref
-{
-    my ($self, $table_name, $insert_hash) = @_;
-
-    my $fh;
-    if(!-f $$self{db_dir}. "/$table_name")
-    {
-        die "Not Existing Table";
-    }
-    open($fh, "+<" . $$self{db_dir} . "/$table_name") or die $!;
-
-    my ($arr_ref, $row_count) = ReadTableMeta($fh);
-   
-    seek($fh, 0, 0);
-    print $fh pack("I", $row_count + 1);
-    seek($fh, 0, 2);
-    my @columns_arr = @{$arr_ref};
-
-    my $col_count = scalar @columns_arr;
-
-    WriteRowMeta($fh);
-
-    foreach my $column(@columns_arr)
-    {
-        $$column{write}->($fh, $$insert_hash{$$column{name}});
-    }
-    
-    close($fh);
-}
-
-
-sub Update($$$)
-{
-    my ($self, $table_name, $update_hash) = @_;
-
-    my $fh;
-    my $fhw;
-
-    if(!-f $$self{db_dir} . "/$table_name")
-    {
-        die "Not Existing Table";
-    }
-    open($fh, "<", $$self{db_dir} . "/$table_name") or die $!; 
-    open($fhw, ">>", $$self{db_dir} . "/$table_name") or die $!;
-    
-    my ($arr_ref, $row_count) = ReadTableMeta($fh);
-
-    my @columns_arr = @{$arr_ref};
-    my @colnames;
-    foreach my $column(@columns_arr)
-    {
-        push @colnames, $$column{name};
-    }
-
-    my $row_counter = 0;    
-    while($row_counter < $row_count)
-    { 
-        $row_counter++;
-        local $| = 1; 
-        my @row;
-        my $is_valid = 1;
-
-        my $row_beginning_pos = tell($fh);
-
-        my $row_flags = ReadRowMeta($fh);
-        #TODO skip deleted rows
-        foreach my $column(@columns_arr)
-        {
-            my $val = $$column{read}->($fh);
-            #TODO do the checking
-            if(!$is_valid)
-            {
-                last;
-            }
-            push @row, $val;
-        }
-
-        my $next_row_position = tell($fh);
-        seek($fh, $next_row_position - $row_beginning_pos, 1);
-        
-
-        if($is_valid)
-        {
-            my $cols_count = scalar(@columns_arr);
-            my $update_row;
-
-            for(my $i = 0; $i < $cols_count; $i++)
-            {
-                $$update_row{$columns_arr[$i]{name}} = exists ($$update_hash{$columns_arr[$i]{name}}) ?  $$update_hash{$columns_arr[$i]{name}} : $row[$i]; #TODO chec    
-            }
-
-            my $next_row_position = tell($fh);
-
-            # seek($fh, $row_beginning_pos, 0);
-            WriteRowMeta($fh, {deleted => 1});#updated row meta
-            # seek($fh, 0, 2);          
-
-            WriteRowMeta($fhw);#new row meta
-            foreach my $column(@columns_arr)
-            {
-                $$column{write}->($fhw, $$update_row{$$column{name}});
-            }   
-            seek($fh, $next_row_position, 0);
-        }
-    }
-
-    close($fh);
-    close($fhw);
-}
-
-sub Delete($$)
-{
-    my($self, $table_name) = @_;            
-}
-
 sub ReadInt($)
 {
     my ($fh) = @_;
@@ -320,14 +400,17 @@ sub ReadInt($)
    
     read($fh, $buffer, 1);
     my $flags = unpack("C", $buffer);
-    if($flags & (1<<7))
-    {
-        $is_null = 1;
-    }
-    #7 more bits for meta info.
 
     read($fh, $buffer, $Config{intsize});
-    return $is_null, unpack("i", $buffer);
+
+    if($flags & (1<<7))
+    {
+        return undef;
+    }
+    else
+    {
+        return unpack("i", $buffer);
+    }
 }
 
 sub WriteInt($$)
@@ -356,17 +439,18 @@ sub ReadString($)
     read($fh, $buffer, 1);
     my $flags = unpack("C", $buffer);
 
-    if($flags & (1<<7))
-    {
-        $is_null = 1;
-    }
-
     read($fh, $buffer, $Config{intsize});
     my $str_length = unpack("I", $buffer);
-
     read($fh, $buffer, $str_length);
 
-    return $is_null, $buffer;
+    if($flags & (1<<7))
+    {
+        return undef;
+    }
+    else
+    {
+        return $buffer;
+    }
 }
 
 sub WriteString($$)

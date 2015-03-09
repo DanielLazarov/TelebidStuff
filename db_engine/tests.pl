@@ -8,7 +8,7 @@ use DanielDB::Engine;
 
 
 #DanielDB::Engine::CreateDB("db_2");
-my $db = DanielDB::Engine->connect("db_2");
+my $db = DanielDB::Engine->connect("db_1");
 
 sub FiveIntColumnsInsert($$)#Rows inserted: 100000, Time:5.08060479164124s.
 {
@@ -117,16 +117,40 @@ sub MixedBigColumnsUpdate($)
 
     $db->Update("mixed_table", $data);
 
-    print "Time:",  time() - $start , "s.\n";
-    
+    print "Update Time:",  time() - $start , "s.\n";  
 }
 
+sub MixedBigColumnsRead($)
+{
+    my($db) = @_;
+
+
+    my $start = time();
+
+    $db->Select("mixed_table");
+
+    print "Read Time:",  time() - $start , "s.\n";  
+}
+
+sub MixedBigColumnsDelete($)
+{
+    my($db) = @_;
+
+
+    my $start = time();
+
+    $db->DeleteRecord("mixed_table");
+
+    print "Delete Time:",  time() - $start , "s.\n";  
+}
 #####################RUN TESTS##########################################################
 
 #FiveIntColumnsInsert($db, 10);
 #FiveIntColumnsUpdate($db);
 MixedBigColumnsInsert($db, 100000);
-MixedBigColumnsUpdate($db);
+#MixedBigColumnsRead($db);
+#MixedBigColumnsUpdate($db);
+MixedBigColumnsDelete($db);
 
 
 
