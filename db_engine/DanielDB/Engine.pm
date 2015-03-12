@@ -128,33 +128,37 @@ sub ReadRow($$)
     return $fh, \@row;
 }
 
-sub WriteRow($$$)
+sub WriteRow($$$$)
 {
-    my($fh, $arr_of_handlers_ref, $arr_of_values_ref) = @_;
+    my($fh, $arr_of_handlers_ref, $arr_of_values_ref, $row_meta) = @_;
 
     my @arr_of_handlers = @{$arr_of_handlers_ref};
     my @arr_of_values = @{$arr_of_values_ref};
 
     my $length = scalar @arr_of_handlers;
-
+    
+    $fh = WriteRowMeta($fh, $row_meta);
     for(my $i = 0; $i < $length; $i++)
     {
         $arr_of_handlers[$i]->($fh, $arr_of_values[$i]);
     }
+
+    return $fh;
 }
 
-sub WriteRow1($$$)
+sub WriteRow1($$$$)
 {
-    my($table_name, $arr_of_handlers_ref, $arr_of_values_ref) = @_;
+    my($table_name, $arr_of_handlers_ref, $arr_of_values_ref, $row_meta) = @_;
 
     my $fh;
     open($fh, ">>", $table_name);
 
     my @arr_of_handlers = @{$arr_of_handlers_ref};
     my @arr_of_values = @{$arr_of_values_ref};
-
+    
     my $length = scalar @arr_of_handlers;
-
+    
+    $fh = WriteRowMeta($fh, $row_meta);
     for(my $i = 0; $i < $length; $i++)
     {
         $arr_of_handlers[$i]->($fh, $arr_of_values[$i]);
@@ -204,7 +208,7 @@ sub Select($$;$)
 
         if($is_valid && !$$row_flags{deleted})
         {
-            # push @result, $row;
+            push @result, $row;
         }
     }
     return \@result;
@@ -240,9 +244,9 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
 }
 
 
-sub Update($$$)
+sub Update($$$;$)
 {
-    my ($self, $table_name, $update_hash) = @_;
+    my ($self, $table_name, $update_hash, $condition_href) = @_;
 
     my $fh;
 
@@ -262,11 +266,14 @@ sub Update($$$)
     my @columns_arr = @{$arr_ref};
     my @handlers_read;
     my @handlers_write;
+    my @update_arr;
+    my @condition_arr;
 
     foreach my $column(@columns_arr) #get Colnames
     {
         push @handlers_read, $$column{read};
-        push @handlers_write, $$column{write}
+        push @handlers_write, $$column{write};
+        push @condition_arr, $$condition_hash{$$column{name}};
     }
 
     while(tell($fh) < $last_pos)
@@ -276,31 +283,27 @@ sub Update($$$)
         my ($fh, $row_ref) = ReadRow($fh, \@handlers_read);
 
         my @row = @{$row_ref};
-        my $is_valid = 1;#TODO conditions!+
+        my $cols_count = scalar(@columns_arr);
 
+        my $is_valid = CheckConditio(\@row, $conditions_href, \@columns);
         if($is_valid && !$$row_flags{deleted})
         {
             my $next_row_pos = tell($fh);
             seek($fh, $beginning_row_pos, 0);
             $fh = WriteRowMeta($fh, {deleted => 1});
             
-            my $cols_count = scalar(@columns_arr);
             my $update_row;
 
             for(my $i = 0; $i < $cols_count; $i++)
             {
-                $$update_row{$columns_arr[$i]{name}} = exists ($$update_hash{$columns_arr[$i]{name}}) ?  $$update_hash{$columns_arr[$i]{name}} : $row[$i];    
+                #$$update_row{$columns_arr[$i]{name}}
+                push @update_arr, exists ($$update_hash{$columns_arr[$i]{name}}) ?  $$update_hash{$columns_arr[$i]{name}} : $row[$i];    
             }
+
             seek($fh, 0,2);        
-
-            $fh = WriteRowMeta($fh);
-            foreach my $column(@columns_arr)
-            {
-                $$column{write}->($fh, $$update_row{$$column{name}});
-            }
-            #$fh = WriteRow($fh, \@handlers_write, $update_row);
-
+            $fh = WriteRow($fh, \@handlers_write, \@update_arr, undef);
             seek($fh, $next_row_pos, 0);
+            #WriteRow1($$self{db_dir} . "/$table_name", \@handlers_write, \@update_arr, undef);
         }
     }
 
@@ -353,6 +356,43 @@ sub DeleteRecord($$;$)
     }
 
     close($fh);
+}
+
+sub CheckCondition($$$)
+{
+    my($row_arr_ref, $conditions_ref, $columns_arr_ref) = @_;
+
+    my @row = @{$row_arr_ref};
+    my @columns = @{$columns_ref};
+    my $cols_count = scalar @columns;
+    
+    my $result = 1;
+    
+    for(my $i = 0; $i < $cols_count; $i++)
+    {
+        if(exists $$conditions_ref{$$columns[$i]{name}})
+        {
+            if($columns[$i]{type} == 1)#int
+            {
+                #check if equal TODO add more conditions
+                if($row[$i] != $$conditions_ref{$columns[$i]{name}})
+                {
+                    $result = 0;
+                    last;
+                }
+            }
+            elsif($$columns[$i]{type} == 2)#text
+            {
+                if($row[$i] ne $$conditions_ref{$columns[$i]{name}})
+                {
+                    $result = 0;
+                    last;
+                }
+            }
+        }    
+    }
+
+    return $result;
 }
 
 sub WriteRowMeta($;$)
