@@ -169,7 +169,7 @@ sub WriteRow1($$$$)
 
 sub Select($$;$)
 {
-    my ($self, $table_name, $select_hash) = @_;
+    my ($self, $table_name, $conditions_href) = @_;
 
     my $fh;
 
@@ -203,9 +203,9 @@ sub Select($$;$)
         my ($fh, $row_flags) = ReadRowMeta($fh);
         my ($fh, $row) = ReadRow($fh, \@handlers);
 
-        my $is_valid = 1;#TODO conditions!+
+        my $is_valid = CheckCondition($row, $conditions_href, \@columns_arr);
     
-
+    
         if($is_valid && !$$row_flags{deleted})
         {
             push @result, $row;
@@ -246,7 +246,7 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
 
 sub Update($$$;$)
 {
-    my ($self, $table_name, $update_hash, $condition_href) = @_;
+    my ($self, $table_name, $update_hash, $conditions_href) = @_;
 
     my $fh;
 
@@ -273,7 +273,7 @@ sub Update($$$;$)
     {
         push @handlers_read, $$column{read};
         push @handlers_write, $$column{write};
-        push @condition_arr, $$condition_hash{$$column{name}};
+        push @condition_arr, $$conditions_href{$$column{name}};
     }
 
     while(tell($fh) < $last_pos)
@@ -285,7 +285,7 @@ sub Update($$$;$)
         my @row = @{$row_ref};
         my $cols_count = scalar(@columns_arr);
 
-        my $is_valid = CheckConditio(\@row, $conditions_href, \@columns);
+        my $is_valid = CheckCondition(\@row, $conditions_href, \@columns_arr);
         if($is_valid && !$$row_flags{deleted})
         {
             my $next_row_pos = tell($fh);
@@ -363,28 +363,78 @@ sub CheckCondition($$$)
     my($row_arr_ref, $conditions_ref, $columns_arr_ref) = @_;
 
     my @row = @{$row_arr_ref};
-    my @columns = @{$columns_ref};
+    my @columns = @{$columns_arr_ref};
     my $cols_count = scalar @columns;
     
     my $result = 1;
     
     for(my $i = 0; $i < $cols_count; $i++)
     {
-        if(exists $$conditions_ref{$$columns[$i]{name}})
+        if(exists $$conditions_ref{$columns[$i]{name}})
         {
             if($columns[$i]{type} == 1)#int
             {
                 #check if equal TODO add more conditions
-                if($row[$i] != $$conditions_ref{$columns[$i]{name}})
-                {
+                if($$conditions_ref{$columns[$i]{name}}{op} eq "==" && $row[$i] != $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                elsif($$conditions_ref{$columns[$i]{name}}{op} eq "!=" && $row[$i] == $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                elsif($$conditions_ref{$columns[$i]{name}}{op} eq ">" && $row[$i] <= $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                elsif($$conditions_ref{$columns[$i]{name}}{op} eq "<" && $row[$i] >= $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                elsif($$conditions_ref{$columns[$i]{name}}{op} eq ">=" && $row[$i] < $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                elsif($$conditions_ref{$columns[$i]{name}}{op} eq "<=" && $row[$i] > $$conditions_ref{$columns[$i]{name}}{val})
+                {    
                     $result = 0;
                     last;
                 }
             }
-            elsif($$columns[$i]{type} == 2)#text
+            elsif($columns[$i]{type} == 2)#text
             {
-                if($row[$i] ne $$conditions_ref{$columns[$i]{name}})
-                {
+                if($$conditions_ref{$columns[$i]{name}}{op} eq "==" && $row[$i] ne $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                if($$conditions_ref{$columns[$i]{name}}{op} eq "!=" && $row[$i] eq $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                if($$conditions_ref{$columns[$i]{name}}{op} eq ">" && ($row[$i] lt $$conditions_ref{$columns[$i]{name}}{val} || $row[$i] eq $$conditions_ref{$columns[$i]{name}}{val} ))
+                {    
+                    $result = 0;
+                    last;
+                }
+                if($$conditions_ref{$columns[$i]{name}}{op} eq "<" && ($row[$i] gt $$conditions_ref{$columns[$i]{name}}{val} || $row[$i] eq $$conditions_ref{$columns[$i]{name}}{val} ))
+                {    
+                    $result = 0;
+                    last;
+                }
+                if($$conditions_ref{$columns[$i]{name}}{op} eq ">=" && $row[$i] lt $$conditions_ref{$columns[$i]{name}}{val})
+                {    
+                    $result = 0;
+                    last;
+                }
+                if($$conditions_ref{$columns[$i]{name}}{op} eq "<=" && $row[$i] gt $$conditions_ref{$columns[$i]{name}}{val})
+                {    
                     $result = 0;
                     last;
                 }
