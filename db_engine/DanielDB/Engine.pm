@@ -7,13 +7,14 @@ use bytes;
 use Config;
 use Data::Dumper;
 use IO::File;
+use Math::BigInt;
+
 
 =pod
 Daniel DB.
 =cut
 
 my $DDB_ROOT_DIR = "/var/daniel_db/";
-my $DELIMITER = "\0\1";
 
 our $type_map = {
     "int" => 1,
@@ -43,6 +44,41 @@ sub connect($$)
     {
         die "Not existing database: $db\n";
     }
+}
+sub BigIntUnpack($)
+{   
+    
+    my ($int1,$int2)=unpack('NN',shift());
+    my $sign=($int1&0x80000000);
+    if($sign)
+    {
+        $int1^=-1;
+        $int2^=-1;
+        ++$int2;
+        $int2%=2**32;
+        ++$int1 unless $int2;
+    }
+    
+    my $i=new Math::BigInt $int1;
+    $i*=2**32;
+    $i+=$int2;
+    $i=-$i if $sign;
+    return $i;
+}
+
+sub BigIntPack($)
+{   
+    my $i = new Math::BigInt shift();
+    my($int1,$int2)=do {
+        if ($i<0) {
+            $i=-1-$i;
+            (~(int($i/2**32)%2**32),~int($i%2**32));
+        } else {
+            (int($i/2**32)%2**32,int($i%2**32));
+        }
+    };
+    my $packed = pack('NN',$int1,$int2);
+    return $packed;
 }
 
 sub CreateDB($)
@@ -88,9 +124,6 @@ sub ReadTableMeta($)
 
     my $buffer = "";
 
-    #read($fh, $buffer, $Config{intsize});
-    #my $row_count = unpack("I", $buffer);
-
     read($fh, $buffer, 1);
     my $col_count = unpack("C", $buffer);
     
@@ -110,7 +143,7 @@ sub ReadTableMeta($)
 
         push @col_arr, $column;
     }
-    return $fh, \@col_arr;    #TODO remove row count.
+    return $fh, \@col_arr;
 }
 
 sub ReadRow($$)
@@ -178,7 +211,7 @@ sub Select($$;$)
         die "Not Existing Table";
     }
     open($fh, "<", $$self{db_dir} . "/$table_name") or die $!;
-    
+   while(!flock($fh, 2)){print "Waiting lock for Select on $table_name \n";}
     seek($fh,0,2);
     my $last_pos = tell($fh);
     seek($fh,0,0);
@@ -224,7 +257,7 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
         die "Not Existing Table";
     }
     open($fh, "+<" . $$self{db_dir} . "/$table_name") or die $!;
-
+    
     my $arr_ref;
 
     ($fh, $arr_ref) = ReadTableMeta($fh);
@@ -233,13 +266,13 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
 
     my $col_count = scalar @columns_arr;
     seek($fh, 0, 2);
+    
+    while(!flock($fh, 2)){print "Waiting lock for insert on: " . $table_name . "\n";}
     $fh = WriteRowMeta($fh);
-
     foreach my $column(@columns_arr)
     {
         $$column{write}->($fh, $$insert_hash{$$column{name}});
     }
-    
     close($fh);
 }
 
@@ -255,7 +288,7 @@ sub Update($$$;$)
         die "Not Existing Table";
     }
     open($fh, "+<", $$self{db_dir} . "/$table_name") or die $!; 
-    
+    while(!flock($fh, 2)){print "Waiting lock for Update on: " . $table_name . "\n";}
     seek($fh,0,2);
     my $last_pos = tell($fh);    
     seek($fh,0,0);
@@ -319,9 +352,9 @@ sub DeleteRecord($$;$)
 
     open ($fh, "+<", $$self{db_dir} . "/" . $table_name);
 
+    while(!flock($fh, 2)){print "Waiting for Delete Record on: $table_name \n";}
     seek($fh,0,2);
     my $last_pos = tell($fh);
-    print "Last pos: $last_pos";
     seek($fh,0,0);
 
     ($fh, $arr_ref) = ReadTableMeta($fh);
@@ -356,6 +389,135 @@ sub DeleteRecord($$;$)
     }
 
     close($fh);
+}
+
+sub CreateIndex($$$)
+{
+    my($self, $table_name, $column_name) = @_;
+
+    if(!-f $$self{db_dir} . "/$table_name")
+    {
+        die "Table \'$table_name\' does not exist.\n";
+    }
+    if(-f $$self{db_dir} . "/$table_name" . $column_name . "_index")
+    {
+        die "Index on \'$column_name\' on table \'$table_name\' already exists.\n";
+    }
+
+    my $fh;
+    my $fha;
+    open($fh, "<", $$self{db_dir} . "/$table_name");
+    while(!flock($fh, 1)){print "Waiting lock for create index on: " . $table_name . "\n"}
+    open($fha, ">>", $$self{db_dir} . "/$table_name" . $column_name . "_index");
+    while(!flock($fha, 2)){print "Waiting lock for create index on: " . $table_name . $column_name . "_index\n"}
+    ieek($fh,0,2);
+    my $last_pos = tell($fh);
+    seek($fh,0,0);
+
+    my $arr_ref;
+    ($fh, $arr_ref) = ReadTableMeta($fh);
+    
+    my @columns_arr = @{$arr_ref};
+    my @handlers;
+    my @result;
+
+    foreach my $column(@columns_arr) #get Colnames
+    {
+        push @handlers, $$column{read};
+    }
+
+    while(tell($fh) < $last_pos)
+    {
+        my $row_beginning = tell($fh);
+
+        my $row_flags;
+        my $row;
+        ($fh, $row_flags) = ReadRowMeta($fh);
+        ($fh, $row) = ReadRow($fh, \@handlers);
+
+        my $is_valid = 1;#TODO conditions!+
+    
+        if($is_valid && !$$row_flags{deleted})
+        {
+            my $row_ending = tell($fh);
+            seek($fh, $row_beginning, 0);
+            $fh = WriteRowMeta($fh, {deleted => 1});
+            seek($fh, $row_ending, 0);
+        }
+    }
+    close($fh);
+    seek($fh,0,2);
+    my $last_pos = tell($fh);
+    seek($fh,0,0);
+
+    my $arr_ref;
+    ($fh, $arr_ref) = ReadTableMeta($fh);
+    
+    my @columns = @{$arr_ref};
+    my @handlers;
+    my @colnames;
+    foreach my $column(@columns) #get Colnames
+    {
+        push @colnames, $$column{name};
+        push @handlers, $$column{read};
+    }
+
+    my $column_index;
+
+    my $col_count = scalar @columns;
+    for(my $i = 0; $i < $col_count; $i++)
+    {
+        if($columns[$i]{name} eq $column_name)
+        {
+            $column_index = $i;
+        }
+        push @handlers, $columns[$i]{read};
+    }
+
+    while(tell($fh) < $last_pos)
+    {
+        my $row_flags;
+        my $row_ref;
+        ($fh, $row_flags) = ReadRowMeta($fh);
+        ($fh, $row_ref) = ReadRow($fh, \@handlers);
+    
+        my @row = @{$row_ref};
+        print $fha pack("i", $row[$column_index]);
+        print $fha BigIntPack(tell($fh));
+    }
+    close $fh;
+    close $fha;
+}
+
+sub ReadIndex($$$)
+{
+    my ($self, $table_name, $column_name) = @_;
+    
+    my $fh;
+    open($fh, "<", $$self{db_dir} . "/$table_name" . $column_name . "_index") or die $!;
+    while(!flock($fh, 1)){print "waiting for lock for read index on: " . $table_name . $column_name . "_index\n";}
+    seek($fh, 0,2);
+    my $last_pos = tell($fh);
+    seek($fh,0,0);
+
+
+    while(tell($fh) < $last_pos)
+    {
+        my $buffer = '';
+
+        read($fh, $buffer, $Config{intsize});
+
+        my $value = unpack("i", $buffer);
+
+        read($fh, $buffer, 8);
+
+        my $position = BigIntUnpack($buffer);
+
+        print "Value: " . $value . "\n";
+        print "Position" . $position . "\n";
+    }
+
+    close $fh;
 }
 
 sub CheckCondition($$$)
