@@ -211,7 +211,9 @@ sub Select($$;$)
         die "Not Existing Table";
     }
     open($fh, "<", $$self{db_dir} . "/$table_name") or die $!;
-   while(!flock($fh, 2)){print "Waiting lock for Select on $table_name \n";}
+    
+    flock($fh, 2);
+    
     seek($fh,0,2);
     my $last_pos = tell($fh);
     seek($fh,0,0);
@@ -244,6 +246,9 @@ sub Select($$;$)
             push @result, $row;
         }
     }
+
+    close($fh);
+
     return \@result;
 }
 
@@ -257,7 +262,7 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
         die "Not Existing Table";
     }
     open($fh, "+<" . $$self{db_dir} . "/$table_name") or die $!;
-    
+    flock($fh, 2);
     my $arr_ref;
 
     ($fh, $arr_ref) = ReadTableMeta($fh);
@@ -267,12 +272,12 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
     my $col_count = scalar @columns_arr;
     seek($fh, 0, 2);
     
-    while(!flock($fh, 2)){print "Waiting lock for insert on: " . $table_name . "\n";}
     $fh = WriteRowMeta($fh);
     foreach my $column(@columns_arr)
     {
         $$column{write}->($fh, $$insert_hash{$$column{name}});
     }
+    sleep 1;
     close($fh);
 }
 
@@ -288,7 +293,7 @@ sub Update($$$;$)
         die "Not Existing Table";
     }
     open($fh, "+<", $$self{db_dir} . "/$table_name") or die $!; 
-    while(!flock($fh, 2)){print "Waiting lock for Update on: " . $table_name . "\n";}
+    flock($fh, 2);
     seek($fh,0,2);
     my $last_pos = tell($fh);    
     seek($fh,0,0);
@@ -352,7 +357,7 @@ sub DeleteRecord($$;$)
 
     open ($fh, "+<", $$self{db_dir} . "/" . $table_name);
 
-    while(!flock($fh, 2)){print "Waiting for Delete Record on: $table_name \n";}
+    flock($fh, 2);
     seek($fh,0,2);
     my $last_pos = tell($fh);
     seek($fh,0,0);
@@ -407,10 +412,10 @@ sub CreateIndex($$$)
     my $fh;
     my $fha;
     open($fh, "<", $$self{db_dir} . "/$table_name");
-    while(!flock($fh, 1)){print "Waiting lock for create index on: " . $table_name . "\n"}
+    flock($fh, 1);
     open($fha, ">>", $$self{db_dir} . "/$table_name" . $column_name . "_index");
-    while(!flock($fha, 2)){print "Waiting lock for create index on: " . $table_name . $column_name . "_index\n"}
-    ieek($fh,0,2);
+    flock($fha, 2);
+    seek($fh,0,2);
     my $last_pos = tell($fh);
     seek($fh,0,0);
 
@@ -495,7 +500,7 @@ sub ReadIndex($$$)
     
     my $fh;
     open($fh, "<", $$self{db_dir} . "/$table_name" . $column_name . "_index") or die $!;
-    while(!flock($fh, 1)){print "waiting for lock for read index on: " . $table_name . $column_name . "_index\n";}
+    flock($fh, 1);
     seek($fh, 0,2);
     my $last_pos = tell($fh);
     seek($fh,0,0);
