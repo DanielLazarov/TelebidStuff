@@ -64,9 +64,9 @@ sub MixedBigColumnsInsert($$)#Rows inserted: 100000, Time :183.23756480217s.
         column3 => 1234567,
         column4 => 12345678,
         column5 => 123456789,
-        column6 => "TEST1",
-        column7 => "TEST1",
-        column8 => "TEST1",
+        column6 => "TEST2",
+        column7 => "TEST2",
+        column8 => "TEST2",
     };
 
     # my $data = {
@@ -82,7 +82,8 @@ sub MixedBigColumnsInsert($$)#Rows inserted: 100000, Time :183.23756480217s.
 
     my $start = time();
     for(my $i = 0; $i < $insert_row_count; $i++)
-    {
+    { 
+        sleep 1;
         $db->Insert("mixed_table", $data);
     }
 
@@ -119,9 +120,9 @@ sub MixedBigColumnsUpdate($)
         column3 => 1234567,
         column4 => 12345678,
         column5 => 123456789,
-        column6 => "col6valueNEW1",
-        column7 => "col7valueNEW2",
-        column8 => "col8valueNEW3",
+        column6 => "col6valueNEW1Script2",
+        column7 => "col7valueNEW2Script2",
+        column8 => "col8valueNEWScript2",
         
     };
 
@@ -172,10 +173,10 @@ sub MixedBigColumnsDelete($)
 
 #FiveIntColumnsInsert($db, 10);
 #FiveIntColumnsUpdate($db);
-MixedBigColumnsInsert($db, 20);
-#MixedBigColumnsRead($db);
-MixedBigColumnsUpdate($db);
-#MixedBigColumnsRead($db);
+##MixedBigColumnsRead($db);
+#MixedBigColumnsUpdate($db);
+#sleep(2);
+MixedBigColumnsRead($db);
 #MixedBigColumnsDelete($db);
 
 

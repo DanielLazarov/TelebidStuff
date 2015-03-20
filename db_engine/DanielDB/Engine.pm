@@ -6,7 +6,7 @@ use bytes;
 
 use Config;
 use Data::Dumper;
-use IO::File;
+use File::Sync qw(fsync sync);
 use Math::BigInt;
 
 
@@ -184,18 +184,27 @@ sub WriteRow1($$$$)
     my($table_name, $arr_of_handlers_ref, $arr_of_values_ref, $row_meta) = @_;
 
     my $fh;
-    open($fh, ">>", $table_name);
+    open($fh, "+<", $table_name);
+    flock($fh, 2);
+    seek($fh,0,2);
 
     my @arr_of_handlers = @{$arr_of_handlers_ref};
     my @arr_of_values = @{$arr_of_values_ref};
     
     my $length = scalar @arr_of_handlers;
     
-    $fh = WriteRowMeta($fh, $row_meta);
+    my $row_meta_b = {busy => 1};
+    
+    my $pos = tell $fh; 
+    $fh = WriteRowMeta($fh, $row_meta_b);
+    sleep 1;
     for(my $i = 0; $i < $length; $i++)
     {
         $arr_of_handlers[$i]->($fh, $arr_of_values[$i]);
     }
+
+    seek($fh, $pos, 0);
+    $fh = WriteRowMeta($fh, $row_meta);
 
     close($fh);
 }
@@ -211,8 +220,6 @@ sub Select($$;$)
         die "Not Existing Table";
     }
     open($fh, "<", $$self{db_dir} . "/$table_name") or die $!;
-    
-    flock($fh, 2);
     
     seek($fh,0,2);
     my $last_pos = tell($fh);
@@ -236,6 +243,10 @@ sub Select($$;$)
     while(tell($fh) < $last_pos)
     {
         my ($fh, $row_flags) = ReadRowMeta($fh);
+        if($$row_flags{busy})
+        {
+            last;
+        }
         my ($fh, $row) = ReadRow($fh, \@handlers);
 
         my $is_valid = CheckCondition($row, $conditions_href, \@columns_arr);
@@ -271,13 +282,17 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
 
     my $col_count = scalar @columns_arr;
     seek($fh, 0, 2);
-    
-    $fh = WriteRowMeta($fh);
+   sleep 1;
+   
+    my $row_meta_b = {busy => 1};
+    my $pos = tell $fh;
+    $fh = WriteRowMeta($fh, $row_meta_b);
     foreach my $column(@columns_arr)
     {
         $$column{write}->($fh, $$insert_hash{$$column{name}});
     }
-    sleep 1;
+    seek($fh,$pos,0);
+    $fh = WriteRowMeta($fh);
     close($fh);
 }
 
@@ -293,7 +308,7 @@ sub Update($$$;$)
         die "Not Existing Table";
     }
     open($fh, "+<", $$self{db_dir} . "/$table_name") or die $!; 
-    flock($fh, 2);
+ 
     seek($fh,0,2);
     my $last_pos = tell($fh);    
     seek($fh,0,0);
@@ -318,6 +333,10 @@ sub Update($$$;$)
     {
         my $beginning_row_pos = tell($fh);
         my ($fh, $row_flags) = ReadRowMeta($fh);
+        if($$row_flags{busy})
+        {
+            last;
+        }
         my ($fh, $row_ref) = ReadRow($fh, \@handlers_read);
 
         my @row = @{$row_ref};
@@ -338,10 +357,10 @@ sub Update($$$;$)
                 push @update_arr, exists ($$update_hash{$columns_arr[$i]{name}}) ?  $$update_hash{$columns_arr[$i]{name}} : $row[$i];    
             }
 
-            seek($fh, 0,2);        
-            $fh = WriteRow($fh, \@handlers_write, \@update_arr, undef);
+            #seek($fh, 0,2);        
+            #$fh = WriteRow($fh, \@handlers_write, \@update_arr, undef);
             seek($fh, $next_row_pos, 0);
-            #WriteRow1($$self{db_dir} . "/$table_name", \@handlers_write, \@update_arr, undef);
+            WriteRow1($$self{db_dir} . "/$table_name", \@handlers_write, \@update_arr, undef);
         }
     }
 
@@ -622,6 +641,10 @@ sub WriteRowMeta($;$)
     {
         $flags += 128;
     }
+    if(defined $$params{busy} && $$params{busy})
+    {
+        $flags +=64;
+    }
 
     print $fh pack("C",$flags );
 
@@ -644,7 +667,10 @@ sub ReadRowMeta($)
     {
         $$result{deleted} = 1;
     }
-
+    if($flags & (1<<6))
+    { 
+        $$result{busy} = 1;
+    }
     return ($fh, $result);
 }
 sub ReadInt($)
@@ -724,3 +750,4 @@ sub WriteString($$)
     print $fh pack("I", bytes::length($value));
     print $fh $value;
 }
+1;
