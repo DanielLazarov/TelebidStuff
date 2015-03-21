@@ -441,42 +441,6 @@ sub CreateIndex($$$)
     my $arr_ref;
     ($fh, $arr_ref) = ReadTableMeta($fh);
     
-    my @columns_arr = @{$arr_ref};
-    my @handlers;
-    my @result;
-
-    foreach my $column(@columns_arr) #get Colnames
-    {
-        push @handlers, $$column{read};
-    }
-
-    while(tell($fh) < $last_pos)
-    {
-        my $row_beginning = tell($fh);
-
-        my $row_flags;
-        my $row;
-        ($fh, $row_flags) = ReadRowMeta($fh);
-        ($fh, $row) = ReadRow($fh, \@handlers);
-
-        my $is_valid = 1;#TODO conditions!+
-    
-        if($is_valid && !$$row_flags{deleted})
-        {
-            my $row_ending = tell($fh);
-            seek($fh, $row_beginning, 0);
-            $fh = WriteRowMeta($fh, {deleted => 1});
-            seek($fh, $row_ending, 0);
-        }
-    }
-    close($fh);
-    seek($fh,0,2);
-    my $last_pos = tell($fh);
-    seek($fh,0,0);
-
-    my $arr_ref;
-    ($fh, $arr_ref) = ReadTableMeta($fh);
-    
     my @columns = @{$arr_ref};
     my @handlers;
     my @colnames;
@@ -498,6 +462,7 @@ sub CreateIndex($$$)
         push @handlers, $columns[$i]{read};
     }
 
+    my 
     while(tell($fh) < $last_pos)
     {
         my $row_flags;
