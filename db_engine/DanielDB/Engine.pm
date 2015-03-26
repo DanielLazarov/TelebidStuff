@@ -221,9 +221,7 @@ sub Select($$;$)
     }
     open($fh, "<", $$self{db_dir} . "/$table_name") or die $!;
     
-    seek($fh,0,2);
-    my $last_pos = tell($fh);
-    seek($fh,0,0);
+    my $last_pos = (stat($fh))[7];
 
 
     my ($fh, $arr_ref) = ReadTableMeta($fh);
@@ -423,7 +421,7 @@ sub CreateIndex($$$)
     {
         die "Table \'$table_name\' does not exist.\n";
     }
-    if(-f $$self{db_dir} . "/$table_name" . $column_name . "_index")
+    if(-f $$self{db_dir} . "/$table_name" . "_" . $column_name . "_index")
     {
         die "Index on \'$column_name\' on table \'$table_name\' already exists.\n";
     }
@@ -431,12 +429,8 @@ sub CreateIndex($$$)
     my $fh;
     my $fha;
     open($fh, "<", $$self{db_dir} . "/$table_name");
-    flock($fh, 1);
-    open($fha, ">>", $$self{db_dir} . "/$table_name" . $column_name . "_index");
-    flock($fha, 2);
-    seek($fh,0,2);
-    my $last_pos = tell($fh);
-    seek($fh,0,0);
+
+    my $last_pos = (stat($fh))[7];
 
     my $arr_ref;
     ($fh, $arr_ref) = ReadTableMeta($fh);
@@ -444,11 +438,11 @@ sub CreateIndex($$$)
     my @columns = @{$arr_ref};
     my @handlers;
     my @colnames;
-    foreach my $column(@columns) #get Colnames
-    {
-        push @colnames, $$column{name};
-        push @handlers, $$column{read};
-    }
+    #foreach my $column(@columns) #get Colnames
+    #{
+    #   push @colnames, $$column{name};
+    #   push @handlers, $$column{read};
+    #}
 
     my $column_index;
 
@@ -462,20 +456,82 @@ sub CreateIndex($$$)
         push @handlers, $columns[$i]{read};
     }
 
-    my 
+    my @index_arr;
+
     while(tell($fh) < $last_pos)
     {
+        print "ROW\n";
         my $row_flags;
         my $row_ref;
+        my $row_position = tell($fh);
         ($fh, $row_flags) = ReadRowMeta($fh);
+        if($$row_flags{busy})
+        {
+            last;
+        }
+        print "POS1: ", tell($fh);        
         ($fh, $row_ref) = ReadRow($fh, \@handlers);
-    
+        print "POS2: ", tell $fh;
         my @row = @{$row_ref};
-        print $fha pack("i", $row[$column_index]);
-        print $fha BigIntPack(tell($fh));
+        
+        push @index_arr, {value => $row[$column_index], pos => $row_position};
     }
-    close $fh;
+    close($fh);
+    
+    @index_arr = @{IndexSort(\@index_arr)};
+
+    open($fha, ">>", $$self{db_dir} . "/$table_name". "_" . $column_name . "_index");
+    print Dumper \@index_arr;
+    foreach my $record(@index_arr)
+    {
+        print $fha pack("i", $$record{value});
+        print $fha BigIntPack($$record{pos});
+    }    
+    
     close $fha;
+}
+
+sub IndexSort($)
+{
+    my($arr_ref) = @_;
+
+    
+    my @arr = @{$arr_ref};
+
+    my @less;
+    my @more;
+    my @pivot_arr;
+
+    if(scalar @arr <= 1)
+    {
+        return \@arr;
+    }
+    else
+    {
+        my $pivot = $arr[0];
+        foreach my $i (@arr)
+        {
+            if($$i{value} < $$pivot{value})
+            {
+                push @less, $i;
+            }
+            elsif($$i{value} > $$pivot{value})
+            {
+                push @more, $i
+            }
+            else
+            {
+                push @pivot_arr, $i;
+            }
+        }
+
+        @less = @{IndexSort(\@less)};
+        @more = @{IndexSort(\@more)};
+
+        my @all = (@less, @pivot_arr, @more);
+
+        return \@all;
+    }
 }
 
 sub ReadIndex($$$)
@@ -483,11 +539,9 @@ sub ReadIndex($$$)
     my ($self, $table_name, $column_name) = @_;
     
     my $fh;
-    open($fh, "<", $$self{db_dir} . "/$table_name" . $column_name . "_index") or die $!;
-    flock($fh, 1);
-    seek($fh, 0,2);
-    my $last_pos = tell($fh);
-    seek($fh,0,0);
+    open($fh, "<", $$self{db_dir} . "/$table_name" . "_" . $column_name . "_index") or die $!;
+    
+    my $last_pos = (stat($fh))[7];
 
 
     while(tell($fh) < $last_pos)
@@ -503,7 +557,7 @@ sub ReadIndex($$$)
         my $position = BigIntUnpack($buffer);
 
         print "Value: " . $value . "\n";
-        print "Position" . $position . "\n";
+        print "Position: " . $position . "\n";
     }
 
     close $fh;

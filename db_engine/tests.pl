@@ -59,7 +59,7 @@ sub MixedBigColumnsInsert($$)#Rows inserted: 100000, Time :183.23756480217s.
     #$db->CreateTable("mixed_table", \@columns);
 
     my $data = {
-        column1 => 4,
+        column1 => 1,
         column2 => 123456,
         column3 => 1234567,
         column4 => 12345678,
@@ -172,11 +172,14 @@ sub MixedBigColumnsDelete($)
 
 #FiveIntColumnsInsert($db, 10);
 #FiveIntColumnsUpdate($db);
-MixedBigColumnsInsert($db, 20);
+#MixedBigColumnsInsert($db, 1);
 #MixedBigColumnsRead($db);
-MixedBigColumnsUpdate($db);
+#MixedBigColumnsUpdate($db);
 #MixedBigColumnsRead($db);
 #MixedBigColumnsDelete($db);
+
+$db->CreateIndex("mixed_table", "column1");
+#$db->ReadIndex("mixed_table", "column1");
 
 
 
