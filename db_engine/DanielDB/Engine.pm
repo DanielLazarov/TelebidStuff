@@ -437,12 +437,6 @@ sub CreateIndex($$$)
     
     my @columns = @{$arr_ref};
     my @handlers;
-    my @colnames;
-    #foreach my $column(@columns) #get Colnames
-    #{
-    #   push @colnames, $$column{name};
-    #   push @handlers, $$column{read};
-    #}
 
     my $column_index;
 
@@ -460,7 +454,6 @@ sub CreateIndex($$$)
 
     while(tell($fh) < $last_pos)
     {
-        print "ROW\n";
         my $row_flags;
         my $row_ref;
         my $row_position = tell($fh);
@@ -469,9 +462,9 @@ sub CreateIndex($$$)
         {
             last;
         }
-        print "POS1: ", tell($fh);        
+                
         ($fh, $row_ref) = ReadRow($fh, \@handlers);
-        print "POS2: ", tell $fh;
+        
         my @row = @{$row_ref};
         
         push @index_arr, {value => $row[$column_index], pos => $row_position};
@@ -563,6 +556,114 @@ sub ReadIndex($$$)
     close $fh;
 }
 
+sub GetIndexedPositions($$$$)
+{
+    my ($self, $table_name, $column_name, $value) = @_;
+
+    my $fh;
+    open($fh, "<", $$self{db_dir} . "/$table_name" . "_" . $column_name . "_index") or die $!;
+
+    my $last_pos = (stat($fh))[7];
+    
+
+    my $buff;
+    my $middle;
+    my $low = 0;
+    my $high = int($last_pos/12);
+    
+    my @arr;
+
+    seek($fh, int(($low + $high)/2) * 12, 0);
+    
+    while(1)
+    {
+        $middle = int(($low + $high)/2);
+        sleep 1;
+        read($fh, $buff, 4);
+        my $val = unpack("i", $buff);
+        read($fh, $buff, 8);
+
+        if($value == $val)
+        {   
+            print "EQ";
+            my $curr_pos = tell($fh);
+            push @arr, BigIntUnpack($buff);
+
+            while(1)#left vals(if equal)
+            {
+                print "reading LEFT\n";
+                seek($fh, 1, -24);
+                read($fh, $buff, 4);
+                my $left_val = unpack("i", $buff);
+                read($fh, $buff, 8);
+                if($left_val == $val)
+                {
+                    push @arr,  BigIntUnpack($buff);
+                }
+                else
+                {
+                    last;
+                }
+            }
+            seek($fh, $curr_pos, 0);
+
+            while(1)#right vals(if equal)
+            {
+                print "reading RIGHT\n";
+                read($fh, $buff, 4);
+                my $right_val = unpack("i", $buff);
+                read($fh, $buff, 8);
+                if($right_val == $val)
+                {
+                    push @arr,  BigIntUnpack($buff);
+                }
+                else
+                {
+                    last;
+                }
+            }
+            last;
+        }
+        elsif($val < $value)
+        {
+            $low = $middle;
+            seek($fh, int(($high - $low)/2) * 12, 1);
+        }
+        else
+        {
+            print "GT $low $middle ";
+            $high = $middle;
+            print tell $fh, " ";
+            seek($fh, -(int(($high - $low)/2) * 12 + 24), 1);
+            print tell $fh, "\n";
+        }
+    }
+    #my @arr;
+
+    #while(tell($fh) < $last_pos)
+    #{                
+    #   my $buffer = '';
+    #
+    #   read($fh, $buffer, $Config{intsize});
+    #                           
+    #   my $val = unpack("i", $buffer);
+    #                                   
+    #
+    #   read($fh, $buffer, 8);
+    #          
+    #   if($val == $value)
+    #   {        
+    #       push @arr, BigIntUnpack($buffer);
+    #   }
+    #
+    #}
+
+   close $fh;
+
+   return \@arr;
+
+}
+    
 sub CheckCondition($$$)
 {
     my($row_arr_ref, $conditions_ref, $columns_arr_ref) = @_;

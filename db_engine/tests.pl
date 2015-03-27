@@ -4,6 +4,7 @@ use strict;
 use Data::Dumper;
 use Time::HiRes qw( time );
 
+use Math::BigInt;
 use DanielDB::Engine;
 
 
@@ -178,7 +179,9 @@ sub MixedBigColumnsDelete($)
 #MixedBigColumnsRead($db);
 #MixedBigColumnsDelete($db);
 
-$db->CreateIndex("mixed_table", "column1");
+#$db->CreateIndex("mixed_table", "column1");
+my $result = $db->GetIndexedPositions("mixed_table", "column1", 1);
+print @{$result};
 #$db->ReadIndex("mixed_table", "column1");
 
 
