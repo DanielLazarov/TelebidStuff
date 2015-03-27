@@ -57,7 +57,7 @@ sub MixedBigColumnsInsert($$)#Rows inserted: 100000, Time :183.23756480217s.
         {type => "text", name => "column7"},
         {type => "text", name => "column8"},
     );
-    #$db->CreateTable("mixed_table", \@columns);
+    $db->CreateTable("mixed_table", \@columns);
 
     my $data = {
         column1 => 1,
@@ -69,6 +69,8 @@ sub MixedBigColumnsInsert($$)#Rows inserted: 100000, Time :183.23756480217s.
         column7 => "TEST1",
         column8 => "TEST1",
     };
+
+
 
     # my $data = {
     #     column1 => 12345,
@@ -84,6 +86,7 @@ sub MixedBigColumnsInsert($$)#Rows inserted: 100000, Time :183.23756480217s.
     my $start = time();
     for(my $i = 0; $i < $insert_row_count; $i++)
     {
+        $$data{column1} = rand(100);
         $db->Insert("mixed_table", $data);
     }
 
@@ -151,7 +154,7 @@ sub MixedBigColumnsRead($)
 
     my $start = time();
 
-    my $result = $db->Select("mixed_table");
+    my $result = $db->Select("mixed_table", {column1 =>{op => "==", val => 95}});
 
     print Dumper $result;
 
@@ -173,17 +176,18 @@ sub MixedBigColumnsDelete($)
 
 #FiveIntColumnsInsert($db, 10);
 #FiveIntColumnsUpdate($db);
-#MixedBigColumnsInsert($db, 1);
-#MixedBigColumnsRead($db);
+#MixedBigColumnsInsert($db, 1000);
+MixedBigColumnsRead($db);
 #MixedBigColumnsUpdate($db);
 #MixedBigColumnsRead($db);
 #MixedBigColumnsDelete($db);
 
 #$db->CreateIndex("mixed_table", "column1");
-my $result = $db->GetIndexedPositions("mixed_table", "column1", 1);
-print @{$result};
+#my $result = $db->GetIndexedPositions("mixed_table", "column1", 95);
+#print Dumper $result;
 #$db->ReadIndex("mixed_table", "column1");
 
+    
 
 
 ##################################################################################

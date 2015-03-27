@@ -6,7 +6,7 @@ use bytes;
 
 use Config;
 use Data::Dumper;
-use File::Sync qw(fsync sync);
+#use File::Sync qw(fsync sync);
 use Math::BigInt;
 
 
@@ -197,7 +197,7 @@ sub WriteRow1($$$$)
     
     my $pos = tell $fh; 
     $fh = WriteRowMeta($fh, $row_meta_b);
-    sleep 1;
+
     for(my $i = 0; $i < $length; $i++)
     {
         $arr_of_handlers[$i]->($fh, $arr_of_values[$i]);
@@ -209,9 +209,10 @@ sub WriteRow1($$$$)
     close($fh);
 }
 
-sub Select($$;$)
+
+sub Select($$;$$)
 {
-    my ($self, $table_name, $conditions_href) = @_;
+    my ($self, $table_name, $conditions_href, $use_index) = @_;
 
     my $fh;
 
@@ -222,7 +223,6 @@ sub Select($$;$)
     open($fh, "<", $$self{db_dir} . "/$table_name") or die $!;
     
     my $last_pos = (stat($fh))[7];
-
 
     my ($fh, $arr_ref) = ReadTableMeta($fh);
 
@@ -238,22 +238,58 @@ sub Select($$;$)
     }
     push @result, \@colnames;
 
-    while(tell($fh) < $last_pos)
-    {
-        my ($fh, $row_flags) = ReadRowMeta($fh);
-        if($$row_flags{busy})
-        {
-            last;
-        }
-        my ($fh, $row) = ReadRow($fh, \@handlers);
 
-        my $is_valid = CheckCondition($row, $conditions_href, \@columns_arr);
-    
-    
-        if($is_valid && !$$row_flags{deleted})
+    my @positions;
+    if($use_index)
+    {
+        #TODO not like that
+        @positions = @{$self->GetIndexedPositions($table_name, "column1", $$conditions_href{column1}{val})};
+
+        foreach my $position(@positions)
         {
-            push @result, $row;
+            seek($fh, $position, 0);
+            
+            my $row_flags;
+            ($fh, $row_flags) = ReadRowMeta($fh);
+            if($$row_flags{busy})
+            {
+                last;
+            }
+            my $row;
+            ($fh, $row) = ReadRow($fh, \@handlers);
+
+            my $is_valid = CheckCondition($row, $conditions_href, \@columns_arr);
+        
+        
+            if($is_valid && !$$row_flags{deleted})
+            {
+                push @result, $row;
+            }
+
         }
+    }
+    else
+    {
+        while(tell($fh) < $last_pos)
+        {
+            my $row_flags;
+            ($fh, $row_flags) = ReadRowMeta($fh);
+            if($$row_flags{busy})
+            {
+                last;
+            }
+            my $row;
+            ($fh, $row) = ReadRow($fh, \@handlers);
+
+            my $is_valid = CheckCondition($row, $conditions_href, \@columns_arr);
+        
+        
+            if($is_valid && !$$row_flags{deleted})
+            {
+                push @result, $row;
+            }
+        }
+
     }
 
     close($fh);
@@ -280,7 +316,6 @@ sub Insert($$$)#TODO insert_hash may be arr_ref(bulk)
 
     my $col_count = scalar @columns_arr;
     seek($fh, 0, 2);
-   sleep 1;
    
     my $row_meta_b = {busy => 1};
     my $pos = tell $fh;
@@ -474,7 +509,6 @@ sub CreateIndex($$$)
     @index_arr = @{IndexSort(\@index_arr)};
 
     open($fha, ">>", $$self{db_dir} . "/$table_name". "_" . $column_name . "_index");
-    print Dumper \@index_arr;
     foreach my $record(@index_arr)
     {
         print $fha pack("i", $$record{value});
@@ -578,7 +612,7 @@ sub GetIndexedPositions($$$$)
     while(1)
     {
         $middle = int(($low + $high)/2);
-        sleep 1;
+        
         read($fh, $buff, 4);
         my $val = unpack("i", $buff);
         read($fh, $buff, 8);
@@ -592,7 +626,7 @@ sub GetIndexedPositions($$$$)
             while(1)#left vals(if equal)
             {
                 print "reading LEFT\n";
-                seek($fh, 1, -24);
+                seek($fh, -24, 1);
                 read($fh, $buff, 4);
                 my $left_val = unpack("i", $buff);
                 read($fh, $buff, 8);
